@@ -49,10 +49,12 @@ export default class Content extends Component {
             headers: {
                 'Content-Type':'application/json',
             },
-        }).then( results => {
-            if(results.ok === false)
+        }).then(results => {
+            if(results.ok === false) {
+                console.log('reached here');
                 this.setState({errorText: 'Invalid Symbol'});
-            else 
+                return;
+            } else 
                 return results.json();
         }).then (data => {
             var chartData = {};

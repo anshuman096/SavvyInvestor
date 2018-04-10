@@ -9,11 +9,9 @@ class App extends Component {
    render() {
       return (
         <MuiThemeProvider>
-            <div>
-                <AppBar title="Savvy Investor" iconClassNameRight="muidocs-icon-navigation-expand-more"/>
-                <Content />
-             </div>
-          </MuiThemeProvider>
+            <AppBar title="Savvy Investor" iconClassNameRight="muidocs-icon-navigation-expand-more"/>
+            <Content />
+        </MuiThemeProvider>
       );
    }
 }

@@ -42,7 +42,13 @@ router.get('/company/:symbol/:dataType', function(req, res) {
 	var filename = req.params.symbol.toLowerCase() + '.json';
 	var filepath = './daily_time_series_compact/' + filename;
 
-	var data = fs.readFileSync(filepath, 'utf-8');
+	var data;
+	try {
+		data = fs.readFileSync(filepath, 'utf-8');
+	} catch(err) {
+		throw err;
+	}
+	//fs.readFileSync(filepath, 'utf-8');
 	var jsondata = JSON.parse(data);
 	//console.log('company data: ' + JSON.jsondata);
 	var stockdata = jsondata["Time Series (Daily)"];
@@ -63,11 +69,11 @@ router.get('/company/:symbol/:dataType', function(req, res) {
 		closingValues.push(stockdata[key]["4. close"]);
 		result.push({date:key, opening:stockdata[key]["1. open"], closing:stockdata[key]["4. close"]});
 	}
-	openingValueDict["data"] = openingValues;
-	closingValueDict["data"] = closingValues; //first dataset JSON object created
+	openingValueDict["data"] = openingValues.reverse();
+	closingValueDict["data"] = closingValues.reverse(); //first dataset JSON object created
 	datasets.push(openingValueDict);
 	datasets.push(closingValueDict);
-	companyData["labels"] = dates;
+	companyData["labels"] = dates.reverse();
 	companyData["datasets"] = datasets;
 	companyData["tableView"] = result;
 	//console.log('company data results: ' + JSON.stringify(companyData));
