@@ -1,4 +1,10 @@
-
+/**
+ * A node server for the SavvyInvestor. 
+ * URL routing and parameter defining done with
+ * expressjs. Url encoding done using bodyParser
+ *
+ * @author: Anshuman Dikhit
+ */
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
@@ -15,12 +21,21 @@ app.use(cors());
 
 app.use('/api', router);
 
+// A test api url route to confirm server functionality
 router.get('/stock', function(req, res) {
 		res.json([{message: 'Hello World', userid: 'adikhit'},
 				{message: "Good Bye", userid: 'saumi'}]);
 	}
 );
 
+/**
+ * api url route for getting financial stock data from
+ * Alpha Vantage. Currently alpha vantage data is stored locally
+ * in a file in the local directory. Alpha Vantage api call was
+ * made on postman. JSON data is collected modified and returned
+ * in ideal format for visualization.
+ *
+ */
 router.get('/company/:symbol/:dataType', function(req, res) {
 	console.log('company symbol: ' + req.params.symbol);
 	console.log('data type: ' + req.params.dataType);
@@ -36,28 +51,38 @@ router.get('/company/:symbol/:dataType', function(req, res) {
 	var dates = []; //chart labels
 
 	var closingValueDict = {};
-	closingValueDict["label"] = "Closing Values";
-	closingValueDict["fillColor"] = "rgba(220,220,220,0.2)";
-	closingValueDict["strokeColor"] = "rgba(220,220,220,1)";
-	closingValueDict["pointColor"] = "rgba(220,220,220,1)";
-	closingValueDict["pointStrokeColor"] = "#fff";
-	closingValueDict["pointHighlightFill"] = "#fff";
-	closingValueDict["pointHighlightStroke"] = "rgba(220,220,220,1)";
+	var openingValueDict = {};
+	initializeDict(closingValueDict, "Closing Values", "rgba(220, 0, 220, 0.2", "rgba(220, 0, 220, 1");
+	initializeDict(openingValueDict, "Opening Values", "rgba(0, 220, 220, 0.2)", "rgba(220, 220, 220, 1");
+	var openingValues = [];
 	var closingValues = [];
 	var result = [];
 	for(var key in stockdata) {
 		dates.push(key);
+		openingValues.push(stockdata[key]["1. open"]);
 		closingValues.push(stockdata[key]["4. close"]);
-		result.push({date:key, closing:stockdata[key]["4. close"]});
+		result.push({date:key, opening:stockdata[key]["1. open"], closing:stockdata[key]["4. close"]});
 	}
+	openingValueDict["data"] = openingValues;
 	closingValueDict["data"] = closingValues; //first dataset JSON object created
+	datasets.push(openingValueDict);
 	datasets.push(closingValueDict);
 	companyData["labels"] = dates;
 	companyData["datasets"] = datasets;
 	companyData["tableView"] = result;
-	console.log('company data results: ' + JSON.stringify(companyData));
+	//console.log('company data results: ' + JSON.stringify(companyData));
 	res.send(companyData);
 });
+
+function initializeDict(dict, label, fillColor, lineColor) {
+	dict["label"] = label;
+	dict["fillColor"] = fillColor;
+	dict["strokeColor"] = lineColor;
+	dict["pointColor"] = lineColor;
+	dict["pointStrokeColor"] = "#000";
+	dict["pointHighlightFill"] = "#000";
+	dict["pointHighlightStroke"] = lineColor;
+}
 
 
 
