@@ -14,7 +14,11 @@ var LineChart = require("react-chartjs").Line;
 
 
 
-
+/**
+ * The main class which gets data from the node server and interacts with backend.
+ *
+ * @author: Anshuman Dikhit
+ */
 export default class Content extends Component {
 
     constructor(props) {
@@ -29,6 +33,15 @@ export default class Content extends Component {
         }
    }
 
+   /**
+    * Function called by componentWillMount. Takes company name as parameter
+    * This function makes a ReST api call to the node server, and collecs the
+    * JSON object from the server. Manipulates JSON object to split chartData and
+    * tableView Data into 2 separate objects and creates their HTML code to be stored inside
+    * this.state
+    *
+    * @name: The NASDAQ symbol of the company
+    */
     _loadData(name) {
         var url = 'http://localhost:3001/api/company/' + name + '/daily_time_series';
         fetch(url, {
@@ -60,11 +73,11 @@ export default class Content extends Component {
             var tabContent = 
                 <Table>
                     <TableHeader>
-                      <TableRow>
-                        <TableHeaderColumn>Date</TableHeaderColumn>
-                        <TableHeaderColumn>Opening Value</TableHeaderColumn>
-                        <TableHeaderColumn>Closing Value</TableHeaderColumn>
-                      </TableRow>
+                        <TableRow>
+                            <TableHeaderColumn>Date</TableHeaderColumn>
+                            <TableHeaderColumn>Opening Value</TableHeaderColumn>
+                            <TableHeaderColumn>Closing Value</TableHeaderColumn>
+                        </TableRow>
                     </TableHeader>
                     <TableBody>
                         {items}
@@ -87,11 +100,14 @@ export default class Content extends Component {
 
    }
 
+   // 
+   //Helper function to change data when stock symbol is changed
     handleChange = (name, value) => {
         console.log("name : " + name + " value : " + value);
         this.setState({name: value});
     };
 
+    // Function that is called right before render.
     componentWillMount() {
         console.log('LifeCycle: Component WILL MOUNT!')
         console.log('-- Component WILL UPDATE!');//
@@ -99,11 +115,13 @@ export default class Content extends Component {
     
     }
 
+    //caller function for _loadData
     loadData = (event) => {
         console.log("Load Data for " + this.state.name);
         this._loadData(this.state.name);    
     }
 
+    //tab change handler used to change tab value
     handleTabChange = (value) => {
         this.setState({
             activeTab: value,
