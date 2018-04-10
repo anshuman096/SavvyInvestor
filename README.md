@@ -1,3 +1,19 @@
+Website currently runs on a `node` server. In order for data to be properly rendered the user must run 2 instances of the node server:
+
+1. The main web server upon which the default javascript is rendered:
+
+```
+  node src/server.js
+ ```
+ 
+ 2. The server for rendering the React code written for the different components and visuals:
+ 
+ ```
+  npm start
+  ```
+
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 Below you will find some information on how to perform common tasks.<br>
