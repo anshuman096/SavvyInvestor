@@ -31,15 +31,32 @@ router.get('/company/:symbol/:dataType', function(req, res) {
 	var jsondata = JSON.parse(data);
 	//console.log('company data: ' + JSON.jsondata);
 	var stockdata = jsondata["Time Series (Daily)"];
+	var companyData = {};
+	var datasets = []; //chart datasets
+	var dates = []; //chart labels
+
+	var closingValueDict = {};
+	closingValueDict["label"] = "Closing Values";
+	closingValueDict["fillColor"] = "rgba(220,220,220,0.2)";
+	closingValueDict["strokeColor"] = "rgba(220,220,220,1)";
+	closingValueDict["pointColor"] = "rgba(220,220,220,1)";
+	closingValueDict["pointStrokeColor"] = "#fff";
+	closingValueDict["pointHighlightFill"] = "#fff";
+	closingValueDict["pointHighlightStroke"] = "rgba(220,220,220,1)";
+	var closingValues = [];
 	var result = [];
 	for(var key in stockdata) {
+		dates.push(key);
+		closingValues.push(stockdata[key]["4. close"]);
 		result.push({date:key, closing:stockdata[key]["4. close"]});
 	}
-	console.log('company data results: ' + JSON.stringify(result));
-	res.send(result);
-
-	
-	//res.send(req.params);
+	closingValueDict["data"] = closingValues; //first dataset JSON object created
+	datasets.push(closingValueDict);
+	companyData["labels"] = dates;
+	companyData["datasets"] = datasets;
+	companyData["tableView"] = result;
+	console.log('company data results: ' + JSON.stringify(companyData));
+	res.send(companyData);
 });
 
 
