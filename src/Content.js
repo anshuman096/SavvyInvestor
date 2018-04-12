@@ -10,6 +10,9 @@ import {
     TableRow,
     TableRowColumn,
 } from 'material-ui/Table';
+
+
+
 var LineChart = require("react-chartjs").Line;
 
 
@@ -85,13 +88,19 @@ export default class Content extends Component {
                         {items}
                     </TableBody>
                 </Table>
+            var twittData = 
+                <div>
+                    <h1> Hello </h1>
+                </div>
             var chContent = 
                 <div className='item'>
-                    <LineChart data = {chartData} options = {chartOptions} width = '1400' height = '700'/>
+                    <LineChart data = {chartData} options = {chartOptions} width = '700' height = '350'/>
                 </div>
+            
             this.setState({
                 tableContent: tabContent,
                 chartData: chContent,
+                twitterData: twittData,
                 isLoading: false,
                 errorText: ''
             });
@@ -100,6 +109,50 @@ export default class Content extends Component {
             console.log('error');
         });
 
+   }
+
+   _loadTwitterData(name) {
+        var url = 'http://localhost:3001/api/company/' + name + '/twitter';
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type':'application/json',
+            },
+        }).then(results => {
+
+            console.log("show up")
+            if(results.ok === false) {
+                console.log('reached here');
+                this.setState({errorText: 'Invalid Symbol'});
+                return;
+            } else 
+                return results.json();
+        }).then (data => {
+            
+            console.log("show up")
+
+            var twittData = 
+                <div>
+                    <h1> HELO </h1>
+                </div>
+            
+            
+            this.setState({
+                twitterData: twittData,
+                isLoading: false,
+                errorText: ''
+            });
+            return;
+        }).catch(function() {
+            console.log('error');
+        });
+
+
+        //THIS IS WHERE YOU MAKE FETCH CALL
+        //var result = Twitter Data
+        //this.setState({
+        //  twitterData: result
+        //})
    }
 
    // 
@@ -114,6 +167,7 @@ export default class Content extends Component {
         console.log('LifeCycle: Component WILL MOUNT!')
         console.log('-- Component WILL UPDATE!');//
         this._loadData(this.state.name);
+        this._loadTwitterData(this.state.name)
     
     }
 
@@ -121,6 +175,7 @@ export default class Content extends Component {
     loadData = (event) => {
         console.log("Load Data for " + this.state.name);
         this._loadData(this.state.name);    
+        this._loadTwitterData(this.state.name)
     }
 
     //tab change handler used to change tab value
@@ -161,6 +216,11 @@ export default class Content extends Component {
                 <Tab label="Table" value="table">
                     <div className='companyTable'>
                         {this.state.tableContent}
+                    </div>
+                </Tab>
+                <Tab label="Twitter" value="">
+                    <div className='twitterData'>
+                        {this.state.twitterData}
                     </div>
                 </Tab>
             </Tabs>
