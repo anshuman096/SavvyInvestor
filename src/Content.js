@@ -94,7 +94,7 @@ export default class Content extends Component {
                 </div>
             var chContent = 
                 <div className='item'>
-                    <LineChart data = {chartData} options = {chartOptions} width = '700' height = '350'/>
+                    <LineChart data = {chartData} options = {chartOptions} width = '1400' height = '600'/>
                 </div>
             
             this.setState({
@@ -111,6 +111,7 @@ export default class Content extends Component {
 
    }
 
+   //
    _loadTwitterData(name) {
         var url = 'http://localhost:3001/api/company/' + name + '/twitter';
         fetch(url, {
