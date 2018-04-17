@@ -52,14 +52,7 @@ it('picks up tab changes', () => {
 	expect(actualActiveTab).toBe(expectedActiveTab);
 });
 
-it('picks up invalid symbols correctly', () => {
-	const content = mount(<Content/>);
-	content.instance().setState({name: 'Invalid'});
-	content.instance()._loadData();
-	const actualErrorText = content.instance().state.errorText;
-	const expectedErrorText = '';//sus
-	expect(actualErrorText).toBe(expectedErrorText);
-})
+
 
 
 

@@ -25,6 +25,7 @@ const muiTheme2 = getMuiTheme({
   },
 });
 
+//add a home screen
 class App extends Component {
 
    render() {
