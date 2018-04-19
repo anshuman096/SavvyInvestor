@@ -21,6 +21,8 @@ const apiKey = 'IXCH6QB9M98DE4LC';
 
 const apiKey2 = 'EIU0O3TOARTF0U24';
 
+const newsKey = '84687c79606f4ca1888dbd0d0976b481';
+
 const axios = require("axios");
 
 
@@ -74,6 +76,39 @@ router.get('/company/:symbol', async (req, res) => {
 
 
 
+router.get('/news/:searchTerm', function(req, res) {
+		
+		axios.get('https://newsapi.org/v2/everything?q=' + req.params.searchTerm+ '&sortBy=popularity&apiKey=' + newsKey)  
+	    .then((response) => {
+
+	      console.log("REACHES HERE")
+	      console.log(response.data['articles'])
+	      console.log("REACHES HERE")
+
+	      res.send(response.data)
+	      
+
+	      this.setState({
+	        isLoading: false,
+	        //meta: response.data['Meta Data'],
+
+	      }, function(){
+	      		//res.send(res.json(this.state.meta))
+
+	      });
+
+
+	    })
+	    .catch(function(error) {
+	      console.log("THIS DOES NOT WORK")
+
+
+	    }); 
+
+
+	}
+);
+
 /**
  * This function will route data from alpha advantage regarding crypto currency intra day values
  * 
@@ -96,7 +131,7 @@ router.get('/coin/:currency', function(req, res) {
 	      coinData['time data'] = response.data['Time Series (Digital Currency Intraday)']
 
 
-
+	      // This is the response that is sent
 	      res.send(res.json(coinData))
 
 	      this.setState({

@@ -68,7 +68,7 @@ export default class Content extends Component {
             chartData["datasets"] = data["datasets"];
             var tableView = data["tableView"];
             let items = tableView.map((item) => {
-                console.log("Process Item : " + JSON.stringify(item));
+                //console.log("Process Item : " + JSON.stringify(item));
                 return (
                     <TableRow>
                         <TableRowColumn>{item.date}</TableRowColumn>
@@ -221,7 +221,148 @@ export default class Content extends Component {
 
             }
 
+        }).catch(function() {
+            console.log('error');
         });
+         
+
+   }
+
+   _loadNewsData() {
+
+
+      
+
+        var url1 = 'http://localhost:3001/api/news/tsla';
+        fetch(url1, {
+            method: 'GET',
+            headers: {
+                'Content-Type':'application/json',
+            },
+        }).then(results => {
+            if(results.ok === false) {
+                console.log('reached here');
+                this.setState({errorText: 'Invalid Symbol'});
+                return;
+            } else 
+                return results.json();
+        }).then (data => {
+            
+            console.log("Reached NEWS data")
+            console.log(data['articles'][0])
+            console.log("Reached NEWS data")
+
+            var newsData = data;
+
+            var currHeadline = data['articles'][0];
+            
+
+            var ret = 
+                <ul>
+                <h4>{data['articles'][0].title}</h4>
+                <h4>{data['articles'][1].title}</h4>
+                <h4>{data['articles'][2].title}</h4>
+                <h4>{data['articles'][3].title}</h4>
+                </ul>
+            
+            this.setState({ 
+                tslaContent: ret,
+            });
+            
+
+
+        }).catch(function() {
+            console.log('error');
+        });
+
+
+        var url2 = 'http://localhost:3001/api/news/apple';
+        fetch(url2, {
+            method: 'GET',
+            headers: {
+                'Content-Type':'application/json',
+            },
+        }).then(results => {
+            if(results.ok === false) {
+                console.log('reached here');
+                this.setState({errorText: 'Invalid Symbol'});
+                return;
+            } else 
+                return results.json();
+        }).then (data => {
+            
+            console.log("Reached NEWS data")
+            console.log(data['articles'][0])
+            console.log("Reached NEWS data")
+
+            var newsData = data;
+
+            var currHeadline = data['articles'][0];
+            
+
+            var ret = 
+                <ul>
+                <h4>{data['articles'][0].title}</h4>
+                <h4>{data['articles'][1].title}</h4>
+                <h4>{data['articles'][2].title}</h4>
+                <h4>{data['articles'][3].title}</h4>
+                </ul>
+            
+            this.setState({ 
+                appleContent: ret,
+            });
+            
+
+
+        }).catch(function() {
+            console.log('error');
+        });
+
+
+        var url3 = 'http://localhost:3001/api/news/crypto';
+        fetch(url3, {
+            method: 'GET',
+            headers: {
+                'Content-Type':'application/json',
+            },
+        }).then(results => {
+            if(results.ok === false) {
+                console.log('reached here');
+                this.setState({errorText: 'Invalid Symbol'});
+                return;
+            } else 
+                return results.json();
+        }).then (data => {
+            
+            console.log("Reached NEWS data")
+            console.log(data['articles'][0])
+            console.log("Reached NEWS data")
+
+            var newsData = data;
+
+            var currHeadline = data['articles'][0];
+            
+
+            var ret = 
+                <ul>
+                <h4>{data['articles'][0].title}</h4>
+                <h4>{data['articles'][1].title}</h4>
+                <h4>{data['articles'][2].title}</h4>
+                <h4>{data['articles'][3].title}</h4>
+                </ul>
+            
+            this.setState({ 
+                cryptoContent: ret,
+            });
+            
+
+
+        }).catch(function() {
+            console.log('error');
+        });
+
+
+        
          
 
    }
@@ -238,6 +379,7 @@ export default class Content extends Component {
         console.log('-- Component WILL UPDATE!');//
         this._loadData(this.state.name);
         this._loadCoinData();
+        this._loadNewsData();
     
     }
 
@@ -265,6 +407,31 @@ export default class Content extends Component {
             <div className='outer'>
                 
 
+                <h1> News Feed </h1>
+
+                <GridList
+                  style={styles.feed}
+                >
+
+
+                    <div style = {styles.newsBox}>
+                        <h2> Apple Stock </h2>
+                        {this.state.appleContent}
+
+                    </div>
+                    <div style = {styles.newsBox}>
+                        <h2> Crypto Currencies </h2>
+                        {this.state.cryptoContent}
+                    </div>
+                    <div style = {styles.newsBox}>
+                        <h2> Tesla Stock </h2>
+                        {this.state.tslaContent}
+                        
+                    </div>
+
+                </GridList>
+
+
                 <h1> Coin Markets </h1>
 
                 <GridList
@@ -275,19 +442,19 @@ export default class Content extends Component {
                     <div style = {styles.coolBox}>
                         <h1> BTC </h1>
                         {this.state.btcContent}
-                        <h1> Dollar per BTC </h1>
+                        <h2> Dollar per BTC </h2>
 
                     </div>
                     <div style = {styles.coolBox}>
                         <h1> ETH </h1>
                         {this.state.ethContent}
-                        <h1> Dollar per ETH </h1>
+                        <h2> Dollar per ETH </h2>
 
                     </div>
                     <div style = {styles.coolBox}>
                         <h1> LTC </h1>
                         {this.state.ltcContent}
-                        <h1> Dollar per LTC </h1>
+                        <h2> Dollar per LTC </h2>
 
                     </div>
 
@@ -329,6 +496,36 @@ export default class Content extends Component {
 }
 
 const styles = {
+
+  feed: {
+    backgroundColor: 'white',
+
+    display: 'flex',
+    flexWrap: 'nowrap',
+    justifyContent: 'center',
+    height: 500,
+    paddingLeft: '8%',
+    paddingRight: '8%',
+
+
+    },
+
+  newsBox: {
+    height: 400,
+    //borderStyle: 'dotted',
+    //borderColor: 'red',
+    borderRadius: '20px',
+
+    paddingLeft: '30px',
+    paddingRight: '30px',
+    paddingTop: '40px',
+    backgroundColor: 'blue',
+    color:'white',
+    opacity: 0.8,
+
+
+  },
+
   root: {
     backgroundColor: 'DeepSkyBlue',
 
@@ -350,8 +547,8 @@ const styles = {
 
   },
    coolBox: {
-    width: 250,
-    height: 250,
+    width: 200,
+    height: 200,
     //borderStyle: 'dotted',
     //borderColor: 'red',
     borderRadius: '20px',
@@ -366,6 +563,7 @@ const styles = {
 
 
   },
+
 };
 
 const chartOptions = {

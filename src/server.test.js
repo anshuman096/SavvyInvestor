@@ -51,3 +51,23 @@ describe('API Crypto Get Call', function() {
 
     });
 });
+
+describe('API News Get Call', function() {
+    it('Call to currency symbol Apple', () => {
+        
+
+        var url = 'http://localhost:3001/api/news/' + 'apple';
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type':'application/json',
+                },
+            }).then(results => {
+                console.log("Right here")
+
+                assert.equal(results.status, 200)
+            
+            });
+
+    });
+});
