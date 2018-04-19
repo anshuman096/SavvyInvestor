@@ -46,11 +46,19 @@ function GetFormattedDate() {
  * @stockName: the name of the company 
  */
 async function getCachingDate(stockName) {
+	console.log("enters here 6")
 	let result = await CachingDate.find({name: stockName}, function (err, docs) {
+
 		if (docs.length != 0)
 			console.log("GET DATE " + docs[0].date);		
 	});
-	return result[0].date;
+
+
+	if (result.length != 0) {
+		return result[0].date;
+	}
+
+	return null;
 }
 
 /**

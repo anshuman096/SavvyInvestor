@@ -19,6 +19,9 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 const apiKey = 'IXCH6QB9M98DE4LC';
 
+const axios = require("axios");
+
+
 
 var router = express.Router();
 
@@ -37,17 +40,19 @@ app.use('/api', router);
  *
  */
 router.get('/company/:symbol', async (req, res) => {
-	console.log('company symbol: ' + req.params.symbol);
+	console.log('company symbol 2: ' + req.params.symbol);
 	//console.log('data type: ' + req.params.dataType);
 	//get current date and compare to cacheDate
 	var result = {};
 	try {
 			var now = new Date();
 			let lastUpdated = await DB.getCachingDate(req.params.symbol);
+
 			if (lastUpdated != null &&  
 				now.getFullYear() == lastUpdated.getFullYear() &&
 				now.getMonth() == lastUpdated.getMonth() &&
 				now.getDate() == lastUpdated.getDate()) {
+
 				console.log("server.js DATE " + lastUpdated);
 				console.log('DATA FROM CACHE: AS FRESH');
 				uResult = await DB.getInterdayData(req.params.symbol);
@@ -59,10 +64,51 @@ router.get('/company/:symbol', async (req, res) => {
 				result = callData;
 			}
 	} catch(err) {
+		console.log("company symbol reached error")
 		result = {};
 	}
 	res.json(result);
 });
+
+
+router.get('/btc', function(req, res) {
+		
+		axios.get('https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_INTRADAY&symbol=BTC&market=USD&apikey=EIU0O3TOARTF0U24')  
+	    .then((response) => {
+
+	      console.log("REACHES HERE")
+	      console.log(response.data['Meta Data'])
+	      console.log("REACHES HERE")
+
+	      var btcData = {}
+
+	      btcData['meta'] = response.data['Meta Data']
+	      btcData['time data'] = response.data['Time Series (Digital Currency Intraday)']
+
+
+
+	      res.send(res.json(btcData))
+
+	      this.setState({
+	        isLoading: false,
+	        meta: response.data['Meta Data'],
+
+	      }, function(){
+	      		//res.send(res.json(this.state.meta))
+
+	      });
+
+
+	    })
+	    .catch(function(error) {
+	      console.log("THIS DOES NOT WORK")
+
+
+	    }); 
+
+
+	}
+);
 
 
 /**
