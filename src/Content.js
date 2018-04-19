@@ -10,7 +10,10 @@ import {
     TableRow,
     TableRowColumn,
 } from 'material-ui/Table';
+import {GridList, GridTile} from 'material-ui/GridList';
 
+// Receieved help from:
+// http://www.material-ui.com/#/components/grid-list
 
 
 var LineChart = require("react-chartjs").Line;
@@ -109,6 +112,120 @@ export default class Content extends Component {
 
    }
 
+   _loadCoinData() {
+
+
+      
+
+        var url = 'http://localhost:3001/api/coin/btc';
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type':'application/json',
+            },
+        }).then(results => {
+            if(results.ok === false) {
+                console.log('reached here');
+                this.setState({errorText: 'Invalid Symbol'});
+                return;
+            } else 
+                return results.json();
+        }).then (data => {
+            
+            try{
+                var keys = Object.keys(data['time data'])
+            
+
+                var coinData = {};
+                coinData['time data'] = data['time data']
+
+                var currPrice = data['time data'][keys[0]]['1a. price (USD)'];
+                
+                var nameContent = <h1> {currPrice}</h1> 
+
+
+                this.setState({ btcContent: nameContent,});
+            }
+            catch(error) {
+
+            }
+
+
+        });
+
+
+        var url2 = 'http://localhost:3001/api/coin/eth';
+        fetch(url2, {
+            method: 'GET',
+            headers: {
+                'Content-Type':'application/json',
+            },
+        }).then(results => {
+            if(results.ok === false) {
+                console.log('reached here');
+                this.setState({errorText: 'Invalid Symbol'});
+                return;
+            } else 
+                return results.json();
+        }).then (data => {
+            
+            try{
+                var keys = Object.keys(data['time data'])
+            
+                var coinData = {};
+                coinData['time data'] = data['time data']
+
+                var currPrice = data['time data'][keys[0]]['1a. price (USD)'];
+                
+                var nameContent = <h1> {currPrice}</h1> 
+
+
+                this.setState({ ethContent: nameContent,});
+            }
+            catch(error) {
+
+            }
+
+        });
+
+        var url3 = 'http://localhost:3001/api/coin/ltc';
+        fetch(url3, {
+            method: 'GET',
+            headers: {
+                'Content-Type':'application/json',
+            },
+        }).then(results => {
+            if(results.ok === false) {
+                console.log('reached here');
+                this.setState({errorText: 'Invalid Symbol'});
+                return;
+            } else 
+                return results.json();
+        }).then (data => {
+            
+            try{
+                var keys = Object.keys(data['time data'])
+            
+                var coinData = {};
+                coinData['time data'] = data['time data']
+
+                var currPrice = data['time data'][keys[0]]['1a. price (USD)'];
+                console.log(data['time data'][keys[0]]['1a. price (USD)']);
+
+                var nameContent = <h1> {currPrice}</h1> 
+
+
+                this.setState({ ltcContent: nameContent,});
+            }
+            catch(error) {
+
+            }
+
+        });
+         
+
+   }
+
    //Helper function to change data when stock symbol is changed
     handleChange = (name, value) => {
         console.log("name : " + name + " value : " + value);
@@ -120,6 +237,7 @@ export default class Content extends Component {
         console.log('LifeCycle: Component WILL MOUNT!')
         console.log('-- Component WILL UPDATE!');//
         this._loadData(this.state.name);
+        this._loadCoinData();
     
     }
 
@@ -145,6 +263,39 @@ export default class Content extends Component {
 //
         return (
             <div className='outer'>
+                
+
+                <h1> Coin Markets </h1>
+
+                <GridList
+                  style={styles.gridList, styles.root}
+                >
+
+
+                    <div style = {styles.coolBox}>
+                        <h1> BTC </h1>
+                        {this.state.btcContent}
+                        <h1> Dollar per BTC </h1>
+
+                    </div>
+                    <div style = {styles.coolBox}>
+                        <h1> ETH </h1>
+                        {this.state.ethContent}
+                        <h1> Dollar per ETH </h1>
+
+                    </div>
+                    <div style = {styles.coolBox}>
+                        <h1> LTC </h1>
+                        {this.state.ltcContent}
+                        <h1> Dollar per LTC </h1>
+
+                    </div>
+
+                </GridList>
+
+                <h1> Stock Markets </h1>
+
+
                 <TextField
                     floatingLabelText="Stock Symbol"
                     value={this.state.name}
@@ -155,6 +306,8 @@ export default class Content extends Component {
                     label="Lookup" primary={true}
                     onClick={(event) => {this.loadData(event)}}
                 />
+
+
                 <Tabs
                     value={this.state.activeTab}
                     onChange={this.handleTabChange}
@@ -174,6 +327,46 @@ export default class Content extends Component {
       );
    }
 }
+
+const styles = {
+  root: {
+    backgroundColor: 'DeepSkyBlue',
+
+    display: 'flex',
+    flexWrap: 'nowrap',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 500,
+    paddingLeft: '8%',
+    paddingRight: '8%',
+
+  },
+  gridList: {
+
+    
+
+
+    
+
+  },
+   coolBox: {
+    width: 250,
+    height: 250,
+    //borderStyle: 'dotted',
+    //borderColor: 'red',
+    borderRadius: '20px',
+
+    paddingLeft: '30px',
+    paddingRight: '30px',
+    paddingTop: '40px',
+    backgroundColor: 'black',
+    color:'white',
+    opacity: 0.8,
+
+
+
+  },
+};
 
 const chartOptions = {
 

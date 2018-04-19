@@ -19,6 +19,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 const apiKey = 'IXCH6QB9M98DE4LC';
 
+const apiKey2 = 'EIU0O3TOARTF0U24';
+
 const axios = require("axios");
 
 
@@ -71,23 +73,31 @@ router.get('/company/:symbol', async (req, res) => {
 });
 
 
-router.get('/btc', function(req, res) {
+
+/**
+ * This function will route data from alpha advantage regarding crypto currency intra day values
+ * 
+ * @param  req
+ * @param  res
+ * @return json data
+ */
+router.get('/coin/:currency', function(req, res) {
 		
-		axios.get('https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_INTRADAY&symbol=BTC&market=USD&apikey=EIU0O3TOARTF0U24')  
+		axios.get('https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_INTRADAY&symbol=' + req.params.currency +'&market=USD&apikey=' + apiKey2)  
 	    .then((response) => {
 
 	      console.log("REACHES HERE")
 	      console.log(response.data['Meta Data'])
 	      console.log("REACHES HERE")
 
-	      var btcData = {}
+	      var coinData = {}
 
-	      btcData['meta'] = response.data['Meta Data']
-	      btcData['time data'] = response.data['Time Series (Digital Currency Intraday)']
+	      coinData['meta'] = response.data['Meta Data']
+	      coinData['time data'] = response.data['Time Series (Digital Currency Intraday)']
 
 
 
-	      res.send(res.json(btcData))
+	      res.send(res.json(coinData))
 
 	      this.setState({
 	        isLoading: false,
