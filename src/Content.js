@@ -23,7 +23,7 @@ var LineChart = require("react-chartjs").Line;
 /**
  * The main class which gets data from the node server and interacts with backend.
  *
- * @author: Anshuman Dikhit
+ * @author: Anshuman Dikhit, Curran Bhatia
  */
 export default class Content extends Component {
 

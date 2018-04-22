@@ -8,20 +8,25 @@
 
 
 
+
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var cors = require('cors');
 var fs = require('file-system');
 var DB = require('./db/stockDB');
+var key = require('./keys');
+
+
+
+
 const fetch = require('node-fetch');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-const apiKey = 'IXCH6QB9M98DE4LC';
 
-const apiKey2 = 'EIU0O3TOARTF0U24';
-
-const newsKey = '84687c79606f4ca1888dbd0d0976b481';
+const apiKey = key.apiKey;
+const apiKey2 = key.apiKey2;
+const newsKey = key.newsKey;
 
 const axios = require("axios");
 
