@@ -8,16 +8,25 @@
 
 
 
+
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var cors = require('cors');
 var fs = require('file-system');
 var DB = require('./db/stockDB');
+var key = require('./keys');
+
+
+
+
 const fetch = require('node-fetch');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-const apiKey = 'IXCH6QB9M98DE4LC';
+
+const apiKey = key.apiKey;
+const apiKey2 = key.apiKey2;
+const newsKey = key.newsKey;
 
 const axios = require("axios");
 
@@ -71,23 +80,64 @@ router.get('/company/:symbol', async (req, res) => {
 });
 
 
-router.get('/btc', function(req, res) {
+
+router.get('/news/:searchTerm', function(req, res) {
 		
-		axios.get('https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_INTRADAY&symbol=BTC&market=USD&apikey=EIU0O3TOARTF0U24')  
+		axios.get('https://newsapi.org/v2/everything?q=' + req.params.searchTerm+ '&sortBy=popularity&apiKey=' + newsKey)  
+	    .then((response) => {
+
+	      console.log("REACHES HERE")
+	      console.log(response.data['articles'])
+	      console.log("REACHES HERE")
+
+	      res.send(response.data)
+	      
+
+	      this.setState({
+	        isLoading: false,
+	        //meta: response.data['Meta Data'],
+
+	      }, function(){
+	      		//res.send(res.json(this.state.meta))
+
+	      });
+
+
+	    })
+	    .catch(function(error) {
+	      console.log("THIS DOES NOT WORK")
+
+
+	    }); 
+
+
+	}
+);
+
+/**
+ * This function will route data from alpha advantage regarding crypto currency intra day values
+ * 
+ * @param  req
+ * @param  res
+ * @return json data
+ */
+router.get('/coin/:currency', function(req, res) {
+		
+		axios.get('https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_INTRADAY&symbol=' + req.params.currency +'&market=USD&apikey=' + apiKey2)  
 	    .then((response) => {
 
 	      console.log("REACHES HERE")
 	      console.log(response.data['Meta Data'])
 	      console.log("REACHES HERE")
 
-	      var btcData = {}
+	      var coinData = {}
 
-	      btcData['meta'] = response.data['Meta Data']
-	      btcData['time data'] = response.data['Time Series (Digital Currency Intraday)']
+	      coinData['meta'] = response.data['Meta Data']
+	      coinData['time data'] = response.data['Time Series (Digital Currency Intraday)']
 
 
-
-	      res.send(res.json(btcData))
+	      // This is the response that is sent
+	      res.send(res.json(coinData))
 
 	      this.setState({
 	        isLoading: false,
