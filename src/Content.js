@@ -32,6 +32,7 @@ export default class Content extends Component {
             isLoading: true,
             name : 'MSFT',
             activeTab: 'table',
+            dataType: 'interday',
             errorText: '',
         }
    }
@@ -46,7 +47,7 @@ export default class Content extends Component {
     * @name: The NASDAQ symbol of the company
     */
     _loadData(name) {
-        var url = 'http://localhost:3001/api/company/' + name;
+        var url = 'http://localhost:3001/api/company/' + name + '/interday';
         fetch(url, {
             method: 'GET',
             headers: {

@@ -36,27 +36,51 @@ app.use('/api', router);
  * do not line up. This keeps the data as close to live as possible.
  *
  */
-router.get('/company/:symbol', async (req, res) => {
+router.get('/company/:symbol/:dataType', async (req, res) => {
 	console.log('company symbol: ' + req.params.symbol);
-	//console.log('data type: ' + req.params.dataType);
+	console.log('data type: ' + req.params.dataType);
 	//get current date and compare to cacheDate
 	var result = {};
 	try {
 			var now = new Date();
 			let lastUpdated = await DB.getCachingDate(req.params.symbol);
-			if (lastUpdated != null &&  
-				now.getFullYear() == lastUpdated.getFullYear() &&
-				now.getMonth() == lastUpdated.getMonth() &&
-				now.getDate() == lastUpdated.getDate()) {
-				console.log("server.js DATE " + lastUpdated);
-				console.log('DATA FROM CACHE: AS FRESH');
-				uResult = await DB.getInterdayData(req.params.symbol);
-				result = JSON.parse(uResult);
-				
+			//console.log('lastUpdate for CSCO: ' + lastUpdated);
+			if(lastUpdated == null) {
+				console.log('insert data for ' + req.params.symbol);
+				let interdayData = await getFreshData(req.params.symbol, 'interday');
+				let intradayData = await getFreshData(req.params.symbol, 'intraday');
+				insertDataToCache(req.params.symbol, now, interdayData, intradayData);
+				if(req.params.dataType == 'interday')
+					result = interdayData;
+				else
+					result = intradayData;
 			} else {
-				console.log('STALE DATA or NO DATA IN CACHE: GET FRESH');
-				let callData = await getFreshDataAndUpdateCache(req.params.symbol);
-				result = callData;
+				if(req.params.dataType == 'interday') {
+					if (now.getFullYear() == lastUpdated.getFullYear() &&
+						now.getMonth() == lastUpdated.getMonth() &&
+						now.getDate() == lastUpdated.getDate()) {
+							console.log('DATA FROM CACHE: AS FRESH');
+							uResult = await DB.getInterdayData(req.params.symbol);
+							result = JSON.parse(uResult);
+					} else {
+						console.log('STALE DATA or NO DATA IN CACHE: GET FRESH');
+						let callData = await getFreshData(req.params.symbol, req.params.dataType);
+						updateInterdayCache(req.params.symbol, callData);
+						result = callData;
+					}
+				} else if(req.params.dataType == 'intraday') {
+					if (now.getHours() == lastUpdated.getHours() &&
+						now.getMinutes() <= lastUpdated.getMinutes() + 15) {
+							console.log('DATA FROM CACHE: AS FRESH');
+							uResult = await DB.getIntraDayData(req.params.symbol);
+							result = JSON.parse(uResult);
+					} else {
+						console.log('STALE DATA or NO DATA IN CACHE: GET FRESH');
+						let callData = await getFreshData(req.params.symbol, req.params.dataType);
+						updateIntradayCache(req.params.symbol, callData);
+						result = callData;
+					}
+				}
 			}
 	} catch(err) {
 		result = {};
@@ -76,14 +100,18 @@ router.get('/company/:symbol', async (req, res) => {
  * @symbol: the symbol of the company whose timestamp and stock we
  * 			are checking.
  */
-async function getFreshDataAndUpdateCache(symbol) {
+async function getFreshData(symbol, dataType) {
 	// get raw data from AlphaVantage
-	let data = await getDataFromAlphaVantage(symbol);
+	let data = await getDataFromAlphaVantage(symbol, dataType);
 
 	// process data
 	var jsondata = data;
 	//console.log('company data: ' + JSON.jsondata);
-	var stockdata = jsondata["Time Series (Daily)"];
+	var stockdata;
+	if(dataType == 'interday')
+		stockdata = jsondata["Time Series (Daily)"];
+	else if(dataType == 'intraday')
+		stockdata = jsondata["Time Series (15min)"];
 	var companyData = {};
 	var datasets = []; //chart datasets
 	var dates = []; //chart labels
@@ -117,11 +145,6 @@ async function getFreshDataAndUpdateCache(symbol) {
 	companyData["labels"] = dates.reverse();
 	companyData["datasets"] = datasets;
 	companyData["tableView"] = result;
-
-	// update cache and return from cache
-	DB.updateDate(symbol);
-	DB.updateInterdayData(symbol, JSON.stringify(companyData));
-	console.log('server -> data: ' + JSON.stringify(companyData));
 	return companyData;
 }
 
@@ -132,10 +155,14 @@ async function getFreshDataAndUpdateCache(symbol) {
  *
  * @symbol: The company symbol
  */
-async function getDataFromAlphaVantage(symbol) {
-	var url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=' + symbol + '&outputsize=compact&apikey=' + apiKey;
+async function getDataFromAlphaVantage(symbol, dataType) {
+	var url = ''
+	if(dataType == 'interday')
+		url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=' + symbol + '&outputsize=compact&apikey=' + apiKey;
+	else if(dataType == 'intraday')
+		url = 'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=' + symbol + '&interval=15min&apikey=' + apiKey;
 	let data = await getData(url);
-    console.log('FROM ALPHAVANTAGE' + data);
+    console.log('FROM ALPHAVANTAGE' + JSON.stringify(data));
     return data;
 }
 
@@ -159,6 +186,29 @@ async function getData(url) {
         console.log("Utils --> URL err catch: " + responseJson);
     }
     return result;
+}
+
+function insertDataToCache(symbol, timestamp, interday, intraday) {
+	//insert records into db
+	DB.insertDate(symbol, timestamp);
+	DB.insertInterDayData(symbol, JSON.stringify(interday));
+	DB.insertIntraDayData(symbol, JSON.stringify(intraday));
+}
+
+
+function updateInterdayCache(symbol, data) {
+	// update cache
+	DB.updateDate(symbol);
+	DB.updateInterdayData(symbol, JSON.stringify(data));
+	console.log('server -> interdaydata: ' + JSON.stringify(data));
+} 
+
+
+function updateIntradayCache(symbol, data) {
+	// update cache
+	DB.updateDate(symbol);
+	DB.updateIntraDayData(symbol, JSON.stringify(data));
+	console.log('server -> intradaydata: ' + JSON.stringify(data));
 }
 
 
