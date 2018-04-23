@@ -4,6 +4,7 @@ import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Content from './Content';
+import MainPage from './MainPage';
 
 
 import {
@@ -32,6 +33,7 @@ class App extends Component {
       return (
         <MuiThemeProvider muiTheme={muiTheme2}>
             <AppBar title="The Savvy Investor" iconClassNameRight="muidocs-icon-navigation-expand-more"/>
+            <MainPage />
             <Content />
         </MuiThemeProvider>
 
