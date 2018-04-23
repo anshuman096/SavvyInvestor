@@ -8,16 +8,28 @@
 
 
 
+
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var cors = require('cors');
 var fs = require('file-system');
 var DB = require('./db/stockDB');
+
+
+
+
+
 const fetch = require('node-fetch');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-const apiKey = 'IXCH6QB9M98DE4LC';
+
+const apiKey = 'IXCH6QB9M98DE4LC';	
+//const apiKey2 = key.apiKey2;
+const newsKey = '84687c79606f4ca1888dbd0d0976b481';
+
+const axios = require("axios");
+
 
 
 var router = express.Router();
@@ -83,10 +95,92 @@ router.get('/company/:symbol/:dataType', async (req, res) => {
 				}
 			}
 	} catch(err) {
+		console.log("company symbol reached error")
 		result = {};
 	}
 	res.json(result);
 });
+
+
+
+router.get('/news/:searchTerm', function(req, res) {
+		
+		axios.get('https://newsapi.org/v2/everything?q=' + req.params.searchTerm+ '&sortBy=popularity&apiKey=' + newsKey)  
+	    .then((response) => {
+
+	      console.log("NEWS REACHES HERE");
+	      console.log(response.data['articles']);
+	      console.log("NEWS REACHES HERE 2");
+
+	      res.send(response.data)
+	      
+
+	      this.setState({
+	        isLoading: false,
+	        //meta: response.data['Meta Data'],
+
+	      }, function(){
+	      		//res.send(res.json(this.state.meta))
+
+	      });
+
+
+	    })
+	    .catch(function(error) {
+	      console.log("THIS DOES NOT WORK")
+
+
+	    }); 
+
+
+	}
+);
+
+/**
+ * This function will route data from alpha advantage regarding crypto currency intra day values
+ * 
+ * @param  req
+ * @param  res
+ * @return json data
+ */
+router.get('/coin/:currency', function(req, res) {
+		
+		axios.get('https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_INTRADAY&symbol=' + req.params.currency +'&market=USD&apikey=' + apiKey)  
+	    .then((response) => {
+
+	      console.log("BITCOIN REACHES HERE");
+	      console.log(response.data['Meta Data']);
+	      console.log("BITCOIN REACHES HERE 2");
+
+	      var coinData = {}
+
+	      coinData['meta'] = response.data['Meta Data']
+	      coinData['time data'] = response.data['Time Series (Digital Currency Intraday)']
+
+
+	      // This is the response that is sent
+	      res.send(res.json(coinData))
+
+	      this.setState({
+	        isLoading: false,
+	        meta: response.data['Meta Data'],
+
+	      }, function(){
+	      		//res.send(res.json(this.state.meta))
+
+	      });
+
+
+	    })
+	    .catch(function(error) {
+	      console.log("THIS DOES NOT WORK")
+
+
+	    }); 
+
+
+	}
+);
 
 
 /**
@@ -158,7 +252,7 @@ async function getFreshData(symbol, dataType) {
 async function getDataFromAlphaVantage(symbol, dataType) {
 	var url = ''
 	if(dataType == 'interday')
-		url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=' + symbol + '&outputsize=compact&apikey=' + apiKey;
+		url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=' + symbol + '&outputsize=50&apikey=' + apiKey;
 	else if(dataType == 'intraday')
 		url = 'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=' + symbol + '&interval=15min&apikey=' + apiKey;
 	let data = await getData(url);

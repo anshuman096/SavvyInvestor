@@ -10,7 +10,10 @@ import {
     TableRow,
     TableRowColumn,
 } from 'material-ui/Table';
+import {GridList, GridTile} from 'material-ui/GridList';
 
+// Receieved help from:
+// http://www.material-ui.com/#/components/grid-list
 
 
 var LineChart = require("react-chartjs").Line;
@@ -20,7 +23,7 @@ var LineChart = require("react-chartjs").Line;
 /**
  * The main class which gets data from the node server and interacts with backend.
  *
- * @author: Anshuman Dikhit
+ * @author: Anshuman Dikhit, Curran Bhatia
  */
 export default class Content extends Component {
 
@@ -46,8 +49,8 @@ export default class Content extends Component {
     *
     * @name: The NASDAQ symbol of the company
     */
-    _loadData(name) {
-        var url = 'http://localhost:3001/api/company/' + name + '/interday';
+    _loadData(name, dataType) {
+        var url = 'http://localhost:3001/api/company/' + name + '/' + dataType;
         fetch(url, {
             method: 'GET',
             headers: {
@@ -66,7 +69,7 @@ export default class Content extends Component {
             chartData["datasets"] = data["datasets"];
             var tableView = data["tableView"];
             let items = tableView.map((item) => {
-                console.log("Process Item : " + JSON.stringify(item));
+                //console.log("Process Item : " + JSON.stringify(item));
                 return (
                     <TableRow>
                         <TableRowColumn>{item.date}</TableRowColumn>
@@ -110,24 +113,260 @@ export default class Content extends Component {
 
    }
 
+   _loadCoinData() {
+        var url = 'http://localhost:3001/api/coin/btc';
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type':'application/json',
+            },
+        }).then(results => {
+            if(results.ok === false) {
+                console.log('reached here');
+                this.setState({errorText: 'Invalid Symbol'});
+                return;
+            } else 
+                return results.json();
+        }).then (data => {
+            
+            try{
+                var keys = Object.keys(data['time data'])
+                var coinData = {};
+                coinData['time data'] = data['time data']
+                var currPrice = data['time data'][keys[0]]['1a. price (USD)'];
+                var nameContent = <h1> {currPrice}</h1> 
+                //
+                this.setState({ btcContent: nameContent,});
+            }
+            catch(error) {
+            }
+        });
+
+        var url2 = 'http://localhost:3001/api/coin/eth';
+        fetch(url2, {
+            method: 'GET',
+            headers: {
+                'Content-Type':'application/json',
+            },
+        }).then(results => {
+            if(results.ok === false) {
+                console.log('reached here');
+                this.setState({errorText: 'Invalid Symbol'});
+                return;
+            } else 
+                return results.json();
+        }).then (data => {
+            try{
+                var keys = Object.keys(data['time data'])
+                var coinData = {};
+                coinData['time data'] = data['time data']
+                var currPrice = data['time data'][keys[0]]['1a. price (USD)'];
+                var nameContent = <h1> {currPrice}</h1> 
+                //
+                this.setState({ ethContent: nameContent,});
+            }
+            catch(error) {
+            }
+
+        });
+
+        var url3 = 'http://localhost:3001/api/coin/ltc';
+        fetch(url3, {
+            method: 'GET',
+            headers: {
+                'Content-Type':'application/json',
+            },
+        }).then(results => {
+            if(results.ok === false) {
+                console.log('reached here');
+                this.setState({errorText: 'Invalid Symbol'});
+                return;
+            } else 
+                return results.json();
+        }).then (data => {
+            
+            try{
+                var keys = Object.keys(data['time data'])
+            
+                var coinData = {};
+                coinData['time data'] = data['time data']
+
+                var currPrice = data['time data'][keys[0]]['1a. price (USD)'];
+                console.log(data['time data'][keys[0]]['1a. price (USD)']);
+
+                var nameContent = <h1> {currPrice}</h1> 
+
+
+                this.setState({ ltcContent: nameContent,});
+            }
+            catch(error) {
+
+            }
+
+        }).catch(function() {
+            console.log('error');
+        });
+         
+
+   }
+//
+   _loadNewsData() {
+        var url1 = 'http://localhost:3001/api/news/tsla';
+        fetch(url1, {
+            method: 'GET',
+            headers: {
+                'Content-Type':'application/json',
+            },
+        }).then(results => {
+            if(results.ok === false) {
+                console.log('reached here');
+                this.setState({errorText: 'Invalid Symbol'});
+                return;
+            } else 
+                return results.json();
+        }).then (data => {
+            
+            console.log("Reached NEWS data")
+            console.log(data['articles'][0])
+            console.log("Reached NEWS data")
+
+            var newsData = data;
+
+            var currHeadline = data['articles'][0];
+            
+
+            var ret = 
+                <ul>
+                <h4>{data['articles'][0].title}</h4>
+                <h4>{data['articles'][1].title}</h4>
+                <h4>{data['articles'][2].title}</h4>
+                <h4>{data['articles'][3].title}</h4>
+                </ul>
+            
+            this.setState({ 
+                tslaContent: ret,
+            });
+            
+
+
+        }).catch(function() {
+            console.log('error');
+        });
+
+//
+        var url2 = 'http://localhost:3001/api/news/apple';
+        fetch(url2, {
+            method: 'GET',
+            headers: {
+                'Content-Type':'application/json',
+            },
+        }).then(results => {
+            if(results.ok === false) {
+                console.log('reached here');
+                this.setState({errorText: 'Invalid Symbol'});
+                return;
+            } else 
+                return results.json();
+        }).then (data => {
+            
+            console.log("Reached NEWS data")
+            console.log(data['articles'][0])
+            console.log("Reached NEWS data")
+
+            var newsData = data;
+
+            var currHeadline = data['articles'][0];
+            
+
+            var ret = 
+                <ul>
+                <h4>{data['articles'][0].title}</h4>
+                <h4>{data['articles'][1].title}</h4>
+                <h4>{data['articles'][2].title}</h4>
+                <h4>{data['articles'][3].title}</h4>
+                </ul>
+            
+            this.setState({ 
+                appleContent: ret,
+            });
+            
+
+
+        }).catch(function() {
+            console.log('error');
+        });
+
+//
+        var url3 = 'http://localhost:3001/api/news/crypto';
+        fetch(url3, {
+            method: 'GET',
+            headers: {
+                'Content-Type':'application/json',
+            },
+        }).then(results => {
+            if(results.ok === false) {
+                console.log('reached here');
+                this.setState({errorText: 'Invalid Symbol'});
+                return;
+            } else 
+                return results.json();
+        }).then (data => {
+            
+            console.log("Reached NEWS data")
+            console.log(data['articles'][0])
+            console.log("Reached NEWS data")
+
+            var newsData = data;
+
+            var currHeadline = data['articles'][0];
+            
+
+            var ret = 
+                <ul>
+                <h4>{data['articles'][0].title}</h4>
+                <h4>{data['articles'][1].title}</h4>
+                <h4>{data['articles'][2].title}</h4>
+                <h4>{data['articles'][3].title}</h4>
+                </ul>
+            
+            this.setState({ 
+                cryptoContent: ret,
+            });
+            
+
+
+        }).catch(function() {
+            console.log('error');
+        });
+   }
+
+
+
+
    //Helper function to change data when stock symbol is changed
-    handleChange = (name, value) => {
+    handleNameChange = (name, value) => {
         console.log("name : " + name + " value : " + value);
         this.setState({name: value});
+    };
+
+    handleDataTypeChange = (dataType, text) => {
+        this.setState({dataType: text});
     };
 
     // Function that is called right before render.
     componentWillMount() {
         console.log('LifeCycle: Component WILL MOUNT!')
         console.log('-- Component WILL UPDATE!');//
-        this._loadData(this.state.name);
+        this._loadData(this.state.name, this.state.dataType);
+        this._loadCoinData();
+        this._loadNewsData();
     
     }
 
     //caller function for _loadData
     loadData = (event) => {
         console.log("Load Data for " + this.state.name);
-        this._loadData(this.state.name);    
+        this._loadData(this.state.name, this.state.dataType);    
     }
 
     //tab change handler used to change tab value
@@ -146,16 +385,26 @@ export default class Content extends Component {
 //
         return (
             <div className='outer'>
+                <h1> Stock Markets </h1>
                 <TextField
                     floatingLabelText="Stock Symbol"
                     value={this.state.name}
                     errorText={this.state.errorText}
-                    onChange={(name,value) => {this.handleChange(name, value)}}
+                    onChange={(name,value) => {this.handleNameChange(name, value)}}
                 />
+                <TextField
+                    floatingLabelText="Data Type"
+                    value={this.state.dataType}
+                    errorText={this.state.errorText}
+                    onChange={(dataType, text) => {this.handleDataTypeChange(dataType, text)}}
+                />
+
                 <FlatButton 
                     label="Lookup" primary={true}
                     onClick={(event) => {this.loadData(event)}}
                 />
+
+
                 <Tabs
                     value={this.state.activeTab}
                     onChange={this.handleTabChange}
@@ -171,10 +420,135 @@ export default class Content extends Component {
                         </div>
                     </Tab>
                 </Tabs>
+                
+
+                <h1> News Feed </h1>
+
+                <GridList
+                  style={styles.feed}
+                >
+
+
+                    <div style = {styles.newsBox}>
+                        <h2> Apple Stock </h2>
+                        {this.state.appleContent}
+
+                    </div>
+                    <div style = {styles.newsBox}>
+                        <h2> Crypto Currencies </h2>
+                        {this.state.cryptoContent}
+                    </div>
+                    <div style = {styles.newsBox}>
+                        <h2> Tesla Stock </h2>
+                        {this.state.tslaContent}
+                        
+                    </div>
+
+                </GridList>
+
+
+                <h1> Coin Markets </h1>
+
+                <GridList
+                  style={styles.gridList, styles.root}
+                >
+
+
+                    <div style = {styles.coolBox}>
+                        <h1> BTC </h1>
+                        {this.state.btcContent}
+                        <h2> Dollar per BTC </h2>
+
+                    </div>
+                    <div style = {styles.coolBox}>
+                        <h1> ETH </h1>
+                        {this.state.ethContent}
+                        <h2> Dollar per ETH </h2>
+
+                    </div>
+                    <div style = {styles.coolBox}>
+                        <h1> LTC </h1>
+                        {this.state.ltcContent}
+                        <h2> Dollar per LTC </h2>
+
+                    </div>
+
+                </GridList>
             </div>
       );
    }
 }
+
+const styles = {
+
+  feed: {
+    backgroundColor: 'white',
+
+    display: 'flex',
+    flexWrap: 'nowrap',
+    justifyContent: 'center',
+    height: 500,
+    paddingLeft: '8%',
+    paddingRight: '8%',
+
+
+    },
+
+  newsBox: {
+    height: 400,
+    //borderStyle: 'dotted',
+    //borderColor: 'red',
+    borderRadius: '20px',
+
+    paddingLeft: '30px',
+    paddingRight: '30px',
+    paddingTop: '40px',
+    backgroundColor: 'blue',
+    color:'white',
+    opacity: 0.8,
+
+
+  },
+
+  root: {
+    backgroundColor: 'DeepSkyBlue',
+
+    display: 'flex',
+    flexWrap: 'nowrap',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 500,
+    paddingLeft: '8%',
+    paddingRight: '8%',
+
+  },
+  gridList: {
+
+    
+
+
+    
+
+  },
+   coolBox: {
+    width: 200,
+    height: 200,
+    //borderStyle: 'dotted',
+    //borderColor: 'red',
+    borderRadius: '20px',
+
+    paddingLeft: '30px',
+    paddingRight: '30px',
+    paddingTop: '40px',
+    backgroundColor: 'black',
+    color:'white',
+    opacity: 0.8,
+
+
+
+  },
+
+};
 
 const chartOptions = {
 

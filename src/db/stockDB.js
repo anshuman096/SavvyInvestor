@@ -54,6 +54,7 @@ async function insertDate(stockName, timestamp) {
  * @stockName: the name of the company 
  */
 async function getCachingDate(stockName) {
+	console.log("enters here 6")
 	let result = await CachingDate.find({name: stockName}, function (err, docs) {
 		console.log("getCachingDate docs: " + docs.length);
 		if(docs.length == 0)
