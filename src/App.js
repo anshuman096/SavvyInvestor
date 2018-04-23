@@ -7,6 +7,7 @@ import Content from './Content';
 import MainPage from './MainPage';
 
 
+
 import {
   cyan500, cyan700,
   pinkA200,
@@ -26,15 +27,49 @@ const muiTheme2 = getMuiTheme({
   },
 });
 
+
+
+
 //add a home screen
 class App extends Component {
+
+  constructor(props) {
+
+        super(props);
+
+
+
+        this.state = {
+            
+
+            currPage: <MainPage />,
+            errorText: '',
+        }
+
+   }
+
+
+   setToContentPage = () => {
+
+      console.log("Reaches setToContentPage")
+      
+
+      this.setState({
+        currPage: <Content />,
+      });
+
+
+    };
+
+
 
    render() {
       return (
         <MuiThemeProvider muiTheme={muiTheme2}>
             <AppBar title="The Savvy Investor" iconClassNameRight="muidocs-icon-navigation-expand-more"/>
-            <MainPage />
-            <Content />
+            <button type="button" style = {{borderRadius: 20, backgroundColor: 'blue', width: 120, height: 40, color: 'white'}} onClick={this.setToContentPage}>Preview</button>
+
+            {this.state.currPage}
         </MuiThemeProvider>
 
       );

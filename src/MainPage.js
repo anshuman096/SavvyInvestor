@@ -12,6 +12,8 @@ import {
 } from 'material-ui/Table';
 import {GridList, GridTile} from 'material-ui/GridList';
 
+import App from './App';
+
 import { ListGroup, ListGroupItem } from 'react-bootstrap';
 
 
@@ -19,12 +21,18 @@ var LineChart = require("react-chartjs").Line;
 
 
 
-
+/**
+ * This is the component that will act as the homepage for the website.
+ *
+ * @author:  Curran Bhatia
+ */
 export default class MainPage extends Component {
 
     constructor(props) {
 
         super(props);
+
+        this.state = {user: ''};
 
 
         var signUpContent = 
@@ -35,7 +43,7 @@ export default class MainPage extends Component {
                                 <dt style = {{paddingBottom: 10}}>
                                     <label>
                                         User :
-                                        <input type="text" name="name" />
+                                        <input type="text" name="name" user={this.state.user} onChange = {this._putUser.bind(this)}/>
                                     </label>
                                 </dt>
 
@@ -44,11 +52,11 @@ export default class MainPage extends Component {
                                 <dt style = {{paddingBottom: 5}}>
                                     <label>
                                         Pass :
-                                        <input type="text" name="name" />
+                                        <input type="text" name="name" onChange = {this._putPass.bind(this)} />
                                       </label>
                                 </dt>
                                 <dt>
-                                    <input type="submit" value="Submit" />
+                                    <input type="submit" value="Submit" onClick = {this._authenticate.bind(this)} />
                                 </dt>
 
                             </dl>
@@ -63,6 +71,11 @@ export default class MainPage extends Component {
             errorText: '',
         }
 
+
+        this._authenticate = this._authenticate.bind(this);
+        this._putUser = this._putUser.bind(this)
+        this._putPass = this._putPass.bind(this)
+
    }
 
     
@@ -74,7 +87,43 @@ export default class MainPage extends Component {
     }
 
 
-    signUpToggle = () =>{
+    _putUser = (input) => {
+
+
+        console.log("inputting user")
+
+        this.setState({
+            
+
+            user: input.target.user,
+            errorText: '',
+        }); 
+
+    }
+
+    _putPass = (input) => {
+
+        this.setState({
+            
+
+            pass: input.target,
+            errorText: '',
+        }); 
+
+    }
+
+
+    _authenticate() {
+
+
+        console.log( this.state.user)
+        console.log(this.state.pass)
+
+
+    }
+
+
+    signUpToggle = () => {
 
         console.log("Reaches _signUpToggle")
 
@@ -122,6 +171,8 @@ export default class MainPage extends Component {
 
 
     }
+
+
     
 
    render() {
@@ -144,10 +195,18 @@ export default class MainPage extends Component {
 
                         <div style = {{width: 150,
                             height: 200, 
-                            backgroundColor: 'clear', float:'right',}}>
-                            <h4> Sign up Here </h4>
-                            <button type="button" style = {{borderRadius: 20, backgroundColor: 'blue', width: 120, height: 80, color: 'white'}} onClick={this.signUpToggle}>Sign up</button>
-
+                            backgroundColor: 'clear', float:'right', }}>
+                            <li >
+                                <dt>
+                                <h4> Sign up Here </h4>
+                                </dt>
+                                <dt>
+                                <button type="button" style = {{borderRadius: 20, backgroundColor: 'blue', width: 120, height: 40, color: 'white', }} onClick={this.signUpToggle}>Sign up</button>
+                                </dt>
+                                <dt>
+                                <button type="button" style = {{borderRadius: 20, backgroundColor: 'blue', width: 120, height: 40, color: 'white'}} onClick={this.props.setToContentPage}>Preview</button>
+                                </dt>
+                            </li>
                         </div>
                     </div>
 

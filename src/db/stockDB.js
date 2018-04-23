@@ -19,9 +19,22 @@ const CachingIntradaySchema = new Schema({
 	data : String
 });
 
+const AccountSchema = new Schema({
+	username: String,
+	password : String
+});
+
+
+
+
 const CachingDate = mongoose.model('cachingdate', CachingDateSchema);
 const Interday = mongoose.model('interday', CachingInterdaySchema);
 const Intraday = mongoose.model('intraday', CachingIntradaySchema);
+const Account = mongoose.model('accounts', AccountSchema);
+
+
+
+
 
 
 /**
@@ -37,6 +50,84 @@ function GetFormattedDate() {
     var res =  month + "/" + day + "/" + year;
 	console.log("Date to Update " + res);
 	return res;
+}
+
+
+/**
+ * Adds account
+ * @param {[type]} user [description]
+ * @param {[type]} pass [description]
+ */
+async function addAccount(user, pass) {
+	
+	console.log("About to update Accounts")
+	
+
+	var person = new Account({username: user, password: pass})
+
+	person.save(function(err){
+		if (err) throw err;
+
+		console.log("saved it")
+	});
+}
+m
+/**
+ * Deletes account
+ * @param  {[type]} user [description]
+ * @param  {[type]} pass [description]
+ * @return {[type]}      [description]
+ */
+async function deleteAccount(user, pass) {
+	
+	console.log("About to update Accounts")
+	console.log(user)
+	console.log(pass)
+	
+
+
+	Account.find({username: user, password: pass}).remove().exec(function(err){
+		if (err) throw err;
+
+		console.log("removed it")
+	});
+}
+
+
+/*
+	Checks whether there is an existing account
+ */
+async function existingAccount(user, pass) {
+	
+	console.log("Checking Accounts")
+	
+
+
+	return Account.find({username: user, password: pass}, function(err, result){
+		if (err) {
+			console.log("hola")
+		}
+
+		
+		return result;
+	}).then(function (res1) {
+
+		console.log(res1)
+		return res1;
+	});
+
+
+	if (res.length != 0) {
+		console.log(user)
+		console.log(pass)
+		console.log("Reaches end")
+		console.log(res.result)
+		return true;
+	}
+
+	return false;
+
+
 }
 
 /**
@@ -157,4 +248,9 @@ module.exports.getInterdayData = getInterdayData;
 module.exports.updateInterdayData = updateInterdayData;
 module.exports.getIntraDayData = getIntraDayData;
 module.exports.updateIntraData = updateIntraData;
+
+module.exports.addAccount = addAccount;
+module.exports.deleteAccount = deleteAccount;
+module.exports.existingAccount = existingAccount;
+
 
