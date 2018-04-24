@@ -71,3 +71,44 @@ describe('API News Get Call', function() {
 
     });
 });
+
+
+describe('API Add Account call', function() {
+    it('Add account', () => {
+        
+
+        var url = 'http://localhost:3001/api/account/' + 'add/curran+bhatia';
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type':'application/json',
+                },
+            }).then(results => {
+                console.log("Right here")
+
+                assert.equal(results.status, 200)
+            
+            });
+
+    });
+});
+
+describe('API Delete Account call', function() {
+    it('Delete account', () => {
+        
+
+        var url = 'http://localhost:3001/api/account/' + 'delete/curran+bhatia';
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type':'application/json',
+                },
+            }).then(results => {
+                console.log("Right here")
+
+                assert.equal(results.status, 200)
+            
+            });
+
+    });
+});

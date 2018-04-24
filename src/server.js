@@ -182,6 +182,68 @@ router.get('/coin/:currency', function(req, res) {
 	}
 );
 
+/**
+ * API Call that will add a user account
+ */
+router.get('/account/add/:account', function(req, res) {
+		
+		
+		console.log("Entering mongo")
+		var acc = req.params.account.split('+');
+
+
+		DB.addAccount(acc[0], acc[1]);
+
+		
+		res.send(JSON.stringify({}))
+
+	}
+);
+
+
+/**
+ * API Call that will delete a user account
+ */
+router.get('/account/delete/:account', function(req, res) {
+		
+		
+		console.log("Entering mongo")
+		var acc = req.params.account.split('+');
+
+
+		DB.deleteAccount(acc[0], acc[1]);
+
+		
+		res.send(JSON.stringify({}))
+
+	}
+);
+
+
+/**
+ * API Call that will validate a user account
+ */
+router.get('/account/check/:account', function(req, res) {
+		
+		
+		console.log("Entering mongo")
+		var acc = req.params.account.split('+');
+
+
+		//DB.existingAccount(acc[0], acc[1]);
+
+
+		DB.existingAccount(acc[0], acc[1]).then(function (response) {
+			console.log(response)
+			res.send(JSON.stringify({"answer":response}))
+		});
+		
+
+		
+
+	}
+);
+
 
 /**
  * This function is called when the time stamp for the 
