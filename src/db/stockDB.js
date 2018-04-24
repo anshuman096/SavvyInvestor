@@ -53,6 +53,13 @@ function GetFormattedDate() {
 }
 
 
+
+async function insertDate(stockName, timestamp) {
+	CachingDate.create({"name": stockName, "date": timestamp}, function (err, docs) {
+		if (err) throw err;
+		console.log(stockName + ' timestamp inserted to db');
+	});
+
 /**
  * Adds account
  * @param {[type]} user [description]
@@ -128,6 +135,7 @@ async function existingAccount(user, pass) {
 	return false;
 
 
+
 }
 
 /**
@@ -139,17 +147,20 @@ async function existingAccount(user, pass) {
 async function getCachingDate(stockName) {
 	console.log("enters here 6")
 	let result = await CachingDate.find({name: stockName}, function (err, docs) {
-
+		console.log("getCachingDate docs: " + docs.length);
+		if(docs.length == 0)
+			return null;
 		if (docs.length != 0)
 			console.log("GET DATE " + docs[0].date);		
 	});
-
-
-	if (result.length != 0) {
+	console.log('getCachingDate result value is: ' + result);
+	if(result.length === 0) {
+		console.log('company date DNE: ' + stockName);
+		return null;
+	} else {
+		console.log('stockDB -> getCachingDate: ' + result[0].date);
 		return result[0].date;
 	}
-
-	return null;
 }
 
 /**
@@ -159,7 +170,8 @@ async function getCachingDate(stockName) {
  * @stockName: the name of the company
  */
 async function updateDate(stockName) {
-	cacheDate = GetFormattedDate();
+	//cacheDate = GetFormattedDate();
+	cacheDate = new Date();
 	let resultDate = CachingDate.update(
 		{ "name": stockName },
 		{ "$set": { "date": cacheDate } },
@@ -170,7 +182,29 @@ async function updateDate(stockName) {
 				console.log("Token updated: " + raw);
 			}
 	});
-	console.log("Done with Update");
+	console.log("Done with Date Update");
+}
+
+
+async function insertInterDayData(stockName, data) {
+	Interday.create({"name": stockName, "data": data}, function(err, raw) {
+		if(err)
+			console.log('insertInterDay error log: ' + err);
+		else
+			console.log('insertInterDayData successful for ' + stockName);
+	});
+	console.log('done with interday data insertion for ' + stockName);
+}
+
+
+async function insertIntraDayData(stockName, data) {
+	Intraday.create({"name": stockName, "data": data}, function(err, raw) {
+		if(err)
+			console.log('insertIntraDay error log: ' + err);
+		else
+			console.log('insertIntraDayData successful for ' + stockName);
+	});
+	console.log('done with intraday data insertion for ' + stockName);
 }
 
 /**
@@ -228,7 +262,7 @@ async function getIntraDayData(stockName) {
  *
  * @stockNAme: the name of the company
  */
-async function updateIntraData(stockName, data) {
+async function updateIntraDayData(stockName, data) {
 	let uData = Intraday.update(
 		{ "name": stockName },
 		{ "$set": {"data": data} },
@@ -242,12 +276,16 @@ async function updateIntraData(stockName, data) {
 	console.log("Done with IntraDay Update");
 }
 
+module.exports.insertDate = insertDate;
 module.exports.getCachingDate = getCachingDate;
 module.exports.updateDate = updateDate;
+module.exports.insertInterDayData = insertInterDayData;
 module.exports.getInterdayData = getInterdayData;
 module.exports.updateInterdayData = updateInterdayData;
+module.exports.insertIntraDayData = insertIntraDayData;
 module.exports.getIntraDayData = getIntraDayData;
-module.exports.updateIntraData = updateIntraData;
+module.exports.updateIntraDayData = updateIntraDayData;
+
 
 module.exports.addAccount = addAccount;
 module.exports.deleteAccount = deleteAccount;

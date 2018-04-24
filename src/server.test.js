@@ -6,11 +6,11 @@ var assert = require('assert');
 
 
 
-describe('Stock Get Call', function() {
+describe('Stock Get Call Interday', function() {
     it('Call to company symbol AAPL', () => {
     
 
-            var url = 'http://localhost:3001/api/company/' + 'AAPL';
+            var url = 'http://localhost:3001/api/company/AAPL/interday';
             fetch(url, {
                 method: 'GET',
                 headers: {

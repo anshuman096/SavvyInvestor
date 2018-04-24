@@ -35,6 +35,7 @@ export default class Content extends Component {
             isLoading: true,
             name : 'MSFT',
             activeTab: 'table',
+            dataType: 'interday',
             errorText: '',
         }
    }
@@ -48,8 +49,8 @@ export default class Content extends Component {
     *
     * @name: The NASDAQ symbol of the company
     */
-    _loadData(name) {
-        var url = 'http://localhost:3001/api/company/' + name;
+    _loadData(name, dataType) {
+        var url = 'http://localhost:3001/api/company/' + name + '/' + dataType;
         fetch(url, {
             method: 'GET',
             headers: {
@@ -113,10 +114,6 @@ export default class Content extends Component {
    }
 
    _loadCoinData() {
-
-
-      
-
         var url = 'http://localhost:3001/api/coin/btc';
         fetch(url, {
             method: 'GET',
@@ -134,25 +131,16 @@ export default class Content extends Component {
             
             try{
                 var keys = Object.keys(data['time data'])
-            
-
                 var coinData = {};
                 coinData['time data'] = data['time data']
-
                 var currPrice = data['time data'][keys[0]]['1a. price (USD)'];
-                
                 var nameContent = <h1> {currPrice}</h1> 
-
-
+                //
                 this.setState({ btcContent: nameContent,});
             }
             catch(error) {
-
             }
-
-
         });
-
 
         var url2 = 'http://localhost:3001/api/coin/eth';
         fetch(url2, {
@@ -168,22 +156,16 @@ export default class Content extends Component {
             } else 
                 return results.json();
         }).then (data => {
-            
             try{
                 var keys = Object.keys(data['time data'])
-            
                 var coinData = {};
                 coinData['time data'] = data['time data']
-
                 var currPrice = data['time data'][keys[0]]['1a. price (USD)'];
-                
                 var nameContent = <h1> {currPrice}</h1> 
-
-
+                //
                 this.setState({ ethContent: nameContent,});
             }
             catch(error) {
-
             }
 
         });
@@ -227,12 +209,8 @@ export default class Content extends Component {
          
 
    }
-
+//
    _loadNewsData() {
-
-
-      
-
         var url1 = 'http://localhost:3001/api/news/tsla';
         fetch(url1, {
             method: 'GET',
@@ -275,7 +253,7 @@ export default class Content extends Component {
             console.log('error');
         });
 
-
+//
         var url2 = 'http://localhost:3001/api/news/apple';
         fetch(url2, {
             method: 'GET',
@@ -318,7 +296,7 @@ export default class Content extends Component {
             console.log('error');
         });
 
-
+//
         var url3 = 'http://localhost:3001/api/news/crypto';
         fetch(url3, {
             method: 'GET',
@@ -360,24 +338,26 @@ export default class Content extends Component {
         }).catch(function() {
             console.log('error');
         });
-
-
-        
-         
-
    }
 
+
+
+
    //Helper function to change data when stock symbol is changed
-    handleChange = (name, value) => {
+    handleNameChange = (name, value) => {
         console.log("name : " + name + " value : " + value);
         this.setState({name: value});
+    };
+
+    handleDataTypeChange = (dataType, text) => {
+        this.setState({dataType: text});
     };
 
     // Function that is called right before render.
     componentWillMount() {
         console.log('LifeCycle: Component WILL MOUNT!')
         console.log('-- Component WILL UPDATE!');//
-        this._loadData(this.state.name);
+        this._loadData(this.state.name, this.state.dataType);
         this._loadCoinData();
         this._loadNewsData();
     
@@ -386,7 +366,7 @@ export default class Content extends Component {
     //caller function for _loadData
     loadData = (event) => {
         console.log("Load Data for " + this.state.name);
-        this._loadData(this.state.name);    
+        this._loadData(this.state.name, this.state.dataType);    
     }
 
     //tab change handler used to change tab value
@@ -405,6 +385,41 @@ export default class Content extends Component {
 //
         return (
             <div className='outer'>
+                <h1> Stock Markets </h1>
+                <TextField
+                    floatingLabelText="Stock Symbol"
+                    value={this.state.name}
+                    errorText={this.state.errorText}
+                    onChange={(name,value) => {this.handleNameChange(name, value)}}
+                />
+                <TextField
+                    floatingLabelText="Data Type"
+                    value={this.state.dataType}
+                    errorText={this.state.errorText}
+                    onChange={(dataType, text) => {this.handleDataTypeChange(dataType, text)}}
+                />
+
+                <FlatButton 
+                    label="Lookup" primary={true}
+                    onClick={(event) => {this.loadData(event)}}
+                />
+
+
+                <Tabs
+                    value={this.state.activeTab}
+                    onChange={this.handleTabChange}
+                > 
+                    <Tab label="Chart" value="chart">
+                        <div className = 'companyChart'>
+                            {this.state.chartData}
+                        </div>
+                    </Tab>
+                    <Tab label="Table" value="table">
+                        <div className='companyTable'>
+                            {this.state.tableContent}
+                        </div>
+                    </Tab>
+                </Tabs>
                 
 
                 <h1> News Feed </h1>
@@ -459,37 +474,6 @@ export default class Content extends Component {
                     </div>
 
                 </GridList>
-
-                <h1> Stock Markets </h1>
-
-
-                <TextField
-                    floatingLabelText="Stock Symbol"
-                    value={this.state.name}
-                    errorText={this.state.errorText}
-                    onChange={(name,value) => {this.handleChange(name, value)}}
-                />
-                <FlatButton 
-                    label="Lookup" primary={true}
-                    onClick={(event) => {this.loadData(event)}}
-                />
-
-
-                <Tabs
-                    value={this.state.activeTab}
-                    onChange={this.handleTabChange}
-                > 
-                    <Tab label="Chart" value="chart">
-                        <div className = 'companyChart'>
-                            {this.state.chartData}
-                        </div>
-                    </Tab>
-                    <Tab label="Table" value="table">
-                        <div className='companyTable'>
-                            {this.state.tableContent}
-                        </div>
-                    </Tab>
-                </Tabs>
             </div>
       );
    }
