@@ -206,41 +206,46 @@ async function getFreshData(symbol, dataType) {
 		stockdata = jsondata["Time Series (Daily)"];
 	else if(dataType == 'intraday')
 		stockdata = jsondata["Time Series (15min)"];
-	var companyData = {};
-	var datasets = []; //chart datasets
-	var dates = []; //chart labels
-
-	var closingValueDict = {};
-	var openingValueDict = {};
-	var averageValueDict = {};
-	initializeDict(closingValueDict, "Closing Values", "rgba(220, 0, 220, 0.2", "rgba(220, 0, 220, 1");
-	initializeDict(openingValueDict, "Opening Values", "rgba(0, 220, 220, 0.2)", "rgba(220, 220, 220, 1");
-	initializeDict(averageValueDict, "Average Value", "rgba(220, 220, 0, 0.2)", "rgba(220, 220, 0, 1");
-	var openingValues = [];
-	var closingValues = [];
-	var averageValues = [];
-	var result = [];
-	for(var key in stockdata) {
-		dates.push(key);
-		var openingVal = Number(stockdata[key]["1. open"]);
-		var closingVal = Number(stockdata[key]["4. close"]);
-		var avgVal = (openingVal + closingVal)/2;
-		openingValues.push(openingVal.toString());
-		closingValues.push(closingVal.toString());
-		averageValues.push(avgVal.toString());
-		result.push({date:key, opening:openingVal.toString(), closing:closingVal.toString(), average:avgVal.toString()});
-	}
-	openingValueDict["data"] = openingValues.reverse();
-	closingValueDict["data"] = closingValues.reverse(); 
-	averageValueDict["data"] = averageValues.reverse();
-	datasets.push(openingValueDict);
-	datasets.push(closingValueDict);
-	datasets.push(averageValueDict);
-	companyData["labels"] = dates.reverse();
-	companyData["datasets"] = datasets;
-	companyData["tableView"] = result;
+	let companyData = processStockDataEx(stockdata)
 	return companyData;
 }
+
+function processStockDataEx(stockdata) {
+	var pResult = [];
+    var tResult = [];
+    var companyData = {};
+    var period = 10;
+    var startIndex = 0;
+    var lastIndex = 0;
+    for(var key in stockdata) {
+        var openingVal = Number(stockdata[key]["1. open"]);
+        var closingVal = Number(stockdata[key]["4. close"]);
+        var avgVal = closingVal;
+
+        if (startIndex + period > lastIndex) {
+            lastIndex = lastIndex + 1;
+            avgVal = openingVal;
+            pResult.push({name: key, 'Opening Values': openingVal, 'Closing Values': closingVal });
+            tResult.push({date:key, opening:openingVal.toString(), closing:closingVal.toString()});
+        } else {
+            sum = 0;
+            for (var i = startIndex; i < lastIndex; i++) {
+                    sum = sum + pResult[i]['Opening Values'];
+            }
+            avgVal = sum / period;
+            startIndex = startIndex + 1;
+            lastIndex = lastIndex + 1;
+            pResult.push({name: key, 'Opening Values': openingVal, 'Closing Values': closingVal, 'Average Value': avgVal});
+            tResult.push({date:key, opening:openingVal.toString(), closing:closingVal.toString(), average:avgVal.toString()});
+        }
+        //var avgVal = (openingVal + closingVal)/2;
+    }
+    companyData["datasets"] = pResult;
+    companyData["tableView"] = tResult;
+    return companyData;
+}
+
+
 
 /**
  * Based off the given symbol, this function

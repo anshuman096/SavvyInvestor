@@ -10,13 +10,15 @@ import {
     TableRow,
     TableRowColumn,
 } from 'material-ui/Table';
-import {GridList, GridTile} from 'material-ui/GridList';
+import {GridList} from 'material-ui/GridList';
+        
+import {ComposedChart, Line, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend} from 'recharts';
 
 // Receieved help from:
 // http://www.material-ui.com/#/components/grid-list
 
 
-var LineChart = require("react-chartjs").Line;
+//var LineChart = require("react-chartjs").Line;
 
 
 
@@ -32,8 +34,9 @@ export default class Content extends Component {
         this.state = {
             tableContent: null,
             chartData: null,
+            newsContent: null,
             isLoading: true,
-            name : 'MSFT',
+            name : 'DJI',
             activeTab: 'table',
             dataType: 'interday',
             errorText: '',
@@ -87,7 +90,7 @@ export default class Content extends Component {
                             <TableHeaderColumn>Date</TableHeaderColumn>
                             <TableHeaderColumn>Opening Value</TableHeaderColumn>
                             <TableHeaderColumn>Closing Value</TableHeaderColumn>
-                            <TableHeaderColumn>Daily Average</TableHeaderColumn>
+                            <TableHeaderColumn>Moving Average</TableHeaderColumn>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -95,10 +98,27 @@ export default class Content extends Component {
                     </TableBody>
                 </Table>
             //
-            var chContent = 
-                <div className='item'>
-                    <LineChart data = {chartData} options = {chartOptions} width = '1400' height = '600'/>
-                </div>
+            var xData = data["datasets"];
+            var chContent =
+            <div className='item'>
+                <ComposedChart width={1400} height={600} data={xData}
+                margin={{top: 20, right: 20, bottom: 40, left: 40}}>
+                    <CartesianGrid stroke='#f5f5f5'/>
+                    <XAxis dataKey="name" angle="330" />
+                    <YAxis domain={['dataMin', 'dataMax']} />
+                    <YAxis scale="log" />
+                    <Tooltip />
+                    <Legend verticalAlign="top" height={36}/>
+                    <Area type='monotone' dataKey='Opening Values' fillOpacity={0.1} fill='#66cccc' stroke='#66cccc'/>
+                    <Area type='monotone' dataKey='Closing Values' fillOpacity={0.1} fill='#78bddd' stroke='#78bddd'/>
+                    <Line type='monotone' dataKey='Average Value' fill='#413ea0' strokeDasharray="5 5" />
+                </ComposedChart>
+            </div>
+
+            // var chContent = 
+            //     <div className='item'>
+            //         <LineChart data = {chartData} options = {chartOptions} width = '1400' height = '600'/>
+            //     </div>
             //
             this.setState({
                 tableContent: tabContent,
@@ -113,7 +133,7 @@ export default class Content extends Component {
 
    }
 
-   _loadCoinData() {
+    _loadCoinData() {
         var url = 'http://localhost:3001/api/coin/btc';
         fetch(url, {
             method: 'GET',
@@ -195,23 +215,20 @@ export default class Content extends Component {
                 console.log(data['time data'][keys[0]]['1a. price (USD)']);
 
                 var nameContent = <h1> {currPrice}</h1> 
-
-
                 this.setState({ ltcContent: nameContent,});
             }
             catch(error) {
-
             }
-
+//
         }).catch(function() {
             console.log('error');
         });
          
 
    }
-//
-   _loadNewsData() {
-        var url1 = 'http://localhost:3001/api/news/tsla';
+
+   _loadNewsData(name) {
+        var url1 = 'http://localhost:3001/api/news/' + name;
         fetch(url1, {
             method: 'GET',
             headers: {
@@ -226,115 +243,23 @@ export default class Content extends Component {
                 return results.json();
         }).then (data => {
             
-            console.log("Reached NEWS data")
-            console.log(data['articles'][0])
-            console.log("Reached NEWS data")
-
-            var newsData = data;
-
+            console.log("Reached NEWS data");
+            console.log(data['articles'][0]);
+            console.log("Reached NEWS data");
             var currHeadline = data['articles'][0];
             
 
             var ret = 
                 <ul>
-                <h4>{data['articles'][0].title}</h4>
-                <h4>{data['articles'][1].title}</h4>
-                <h4>{data['articles'][2].title}</h4>
-                <h4>{data['articles'][3].title}</h4>
+                    <h4><a href={data['articles'][0].url}>{data['articles'][0].title}</a></h4>
+                    <h4><a href={data['articles'][1].url}>{data['articles'][1].title}</a></h4>
+                    <h4><a href={data['articles'][2].url}>{data['articles'][2].title}</a></h4>
+                    <h4><a href={data['articles'][3].url}>{data['articles'][3].title}</a></h4>
                 </ul>
-            
+//   
             this.setState({ 
-                tslaContent: ret,
+                newsContent: ret,
             });
-            
-
-
-        }).catch(function() {
-            console.log('error');
-        });
-
-//
-        var url2 = 'http://localhost:3001/api/news/apple';
-        fetch(url2, {
-            method: 'GET',
-            headers: {
-                'Content-Type':'application/json',
-            },
-        }).then(results => {
-            if(results.ok === false) {
-                console.log('reached here');
-                this.setState({errorText: 'Invalid Symbol'});
-                return;
-            } else 
-                return results.json();
-        }).then (data => {
-            
-            console.log("Reached NEWS data")
-            console.log(data['articles'][0])
-            console.log("Reached NEWS data")
-
-            var newsData = data;
-
-            var currHeadline = data['articles'][0];
-            
-
-            var ret = 
-                <ul>
-                <h4>{data['articles'][0].title}</h4>
-                <h4>{data['articles'][1].title}</h4>
-                <h4>{data['articles'][2].title}</h4>
-                <h4>{data['articles'][3].title}</h4>
-                </ul>
-            
-            this.setState({ 
-                appleContent: ret,
-            });
-            
-
-
-        }).catch(function() {
-            console.log('error');
-        });
-
-//
-        var url3 = 'http://localhost:3001/api/news/crypto';
-        fetch(url3, {
-            method: 'GET',
-            headers: {
-                'Content-Type':'application/json',
-            },
-        }).then(results => {
-            if(results.ok === false) {
-                console.log('reached here');
-                this.setState({errorText: 'Invalid Symbol'});
-                return;
-            } else 
-                return results.json();
-        }).then (data => {
-            
-            console.log("Reached NEWS data")
-            console.log(data['articles'][0])
-            console.log("Reached NEWS data")
-
-            var newsData = data;
-
-            var currHeadline = data['articles'][0];
-            
-
-            var ret = 
-                <ul>
-                <h4>{data['articles'][0].title}</h4>
-                <h4>{data['articles'][1].title}</h4>
-                <h4>{data['articles'][2].title}</h4>
-                <h4>{data['articles'][3].title}</h4>
-                </ul>
-            
-            this.setState({ 
-                cryptoContent: ret,
-            });
-            
-
-
         }).catch(function() {
             console.log('error');
         });
@@ -359,14 +284,15 @@ export default class Content extends Component {
         console.log('-- Component WILL UPDATE!');//
         this._loadData(this.state.name, this.state.dataType);
         this._loadCoinData();
-        this._loadNewsData();
+        this._loadNewsData(this.state.name);
     
     }
 
     //caller function for _loadData
     loadData = (event) => {
         console.log("Load Data for " + this.state.name);
-        this._loadData(this.state.name, this.state.dataType);    
+        this._loadData(this.state.name, this.state.dataType);  
+        this._loadNewsData(this.state.name);  
     }
 
     //tab change handler used to change tab value
@@ -419,32 +345,12 @@ export default class Content extends Component {
                             {this.state.tableContent}
                         </div>
                     </Tab>
+                    <Tab label="News" value="news">
+                        <div className = 'companyNews'>
+                            {this.state.newsContent}
+                        </div>
+                    </Tab>
                 </Tabs>
-                
-
-                <h1> News Feed </h1>
-
-                <GridList
-                  style={styles.feed}
-                >
-
-
-                    <div style = {styles.newsBox}>
-                        <h2> Apple Stock </h2>
-                        {this.state.appleContent}
-
-                    </div>
-                    <div style = {styles.newsBox}>
-                        <h2> Crypto Currencies </h2>
-                        {this.state.cryptoContent}
-                    </div>
-                    <div style = {styles.newsBox}>
-                        <h2> Tesla Stock </h2>
-                        {this.state.tslaContent}
-                        
-                    </div>
-
-                </GridList>
 
 
                 <h1> Coin Markets </h1>
