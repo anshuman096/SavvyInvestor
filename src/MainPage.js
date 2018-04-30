@@ -32,44 +32,49 @@ export default class MainPage extends Component {
 
         super(props);
 
-        this.state = {user: ''};
+        this.state = {
+            user: '',
+            passA: '',
+            passAgain: '',
+        };
 
 
-        var signUpContent = 
-                    <div style = {{width: 300,
-                            height: 200, backgroundColor: 'clear', float:'left', border: 'solid'}}>
-                        <h4> Sign in Here </h4>
-                            <dl>
-                                <dt style = {{paddingBottom: 10}}>
-                                    <label>
-                                        User :
-                                        <input type="text" name="name" user={this.state.user} onChange = {this._putUser.bind(this)}/>
-                                    </label>
-                                </dt>
+        // var signUpContent = 
+        //             <div style = {{width: 300,
+        //                     height: 200, backgroundColor: 'clear', float:'left', border: 'solid'}}>
+        //                 <h4> Sign up Here: </h4>
+        //                     <dl>
+        //                         <dt style = {{paddingBottom: 10}}>
+        //                             <label>
+        //                                 User :
+        //                                 <input type="text" name="name" />
+        //                             </label>
+        //                         </dt>
 
                                 
 
-                                <dt style = {{paddingBottom: 5}}>
-                                    <label>
-                                        Pass :
-                                        <input type="text" name="name" onChange = {this._putPass.bind(this)} />
-                                      </label>
-                                </dt>
-                                <dt>
-                                    <input type="submit" value="Submit" onClick = {this._authenticate.bind(this)} />
-                                </dt>
+        //                         <dt style = {{paddingBottom: 5}}>
+        //                             <label>
+        //                                 Pass :
+        //                                 <input type="text" name="name" />
+        //                               </label>
+        //                         </dt>
+        //                         <dt style = {{paddingBottom: 5}}>
+        //                             <label>
+        //                                 Pass :
+        //                                 <input type="text" name="name" />
+        //                               </label>
+        //                         </dt>
+        //                         <dt>
+        //                             <input type="submit" value="Submit" />
+        //                         </dt>
 
-                            </dl>
+        //                     </dl>
 
-                        </div>
+        //                 </div>
 
 
-        this.state = {
-            
-
-            signUp: signUpContent,
-            errorText: '',
-        }
+        
 
 
         this._authenticate = this._authenticate.bind(this);
@@ -118,6 +123,73 @@ export default class MainPage extends Component {
 
         console.log( this.state.user)
         console.log(this.state.pass)
+
+
+    }
+
+    updateUser = (input) => {
+
+        this.setState({
+            
+
+            user: input.target.value,
+            errorText: '',
+        }); 
+
+    }
+
+    updatePass = (input) => {
+
+
+        this.setState({
+            
+
+            passA: input.target.value,
+            errorText: '',
+        }); 
+
+    }
+
+    updatePassAgain = (input) => {
+
+        this.setState({
+            
+
+            passAgain: input.target.value,
+            errorText: '',
+        }); 
+
+    }
+
+    submitNewAccount = () => {
+
+        console.log("hereer")
+        console.log(this.state.user)
+        console.log(this.state.passAgain)
+
+
+        var url1 = 'http://localhost:3001/api/account/add/' + this.state.user + '+' + this.state.passAgain;
+        fetch(url1, {
+            method: 'GET',
+            headers: {
+                'Content-Type':'application/json',
+            },
+        }).then(results => {
+            if(results.ok === false) {
+                console.log('reached RESULTS IN CURRENT ACCOUNT');
+
+                return;
+            } else 
+                return results.json();
+        }).then (data => {
+            
+            
+
+
+        }).catch(function() {
+            console.log('error IN CURRENT ACCOUNT');
+        });
+
 
 
     }
@@ -191,7 +263,33 @@ export default class MainPage extends Component {
                     <h1 style = {mainStyles.bigText}>Welcome to the Savvy Investor</h1>
                     <div style = {mainStyles.smallBox}>
                         
-                        {this.state.signUp}
+                        <div style = {{width: 300,
+                            height: 200, backgroundColor: 'clear', float:'left', border: 'solid'}}>
+                        <h4> Sign up Here: </h4>
+                            <dl>
+                                <dt style = {{paddingBottom: 10}}>
+                                    <label>
+                                        User :
+                                        <input value={this.state.user} onChange={this.updateUser} type="text" name="name" />
+                                    </label>
+                                </dt>
+
+                                
+
+                                
+                                <dt style = {{paddingBottom: 5}}>
+                                    <label>
+                                        Pass :
+                                        <input value={this.state.passAgain} onChange={this.updatePassAgain} type="text" name="name" />
+                                      </label>
+                                </dt>
+                                <dt>
+                                <button type="button" style = {{borderRadius: 20, backgroundColor: 'blue', width: 120, height: 40, color: 'white', }} onClick={this.submitNewAccount}>Sign up</button>
+                                </dt>
+
+                            </dl>
+
+                        </div>
 
                         <div style = {{width: 150,
                             height: 200, 

@@ -112,3 +112,44 @@ describe('API Delete Account call', function() {
 
     });
 });
+
+
+describe('API Login Account call', function() {
+    it('Login account', () => {
+        
+
+        var url = 'http://localhost:3001/api/current/' + 'add/curran+bhatia';
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type':'application/json',
+                },
+            }).then(results => {
+                console.log("Right here")
+
+                assert.equal(results.status, 200)
+            
+            });
+
+    });
+});
+
+describe('API Logout Account call', function() {
+    it('Logout account', () => {
+        
+
+        var url = 'http://localhost:3001/api/current/' + 'logout/curran+bhatia';
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type':'application/json',
+                },
+            }).then(results => {
+                console.log("Right here")
+
+                assert.equal(results.status, 200)
+            
+            });
+
+    });
+});

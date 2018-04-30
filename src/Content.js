@@ -38,7 +38,11 @@ export default class Content extends Component {
             isLoading: true,
             name : 'tsla',
             activeTab: 'table',
+            user: 'Person',
             errorText: '',
+            newsTitleArray: [],
+            newsArray: [],
+
         }
    }
 
@@ -233,12 +237,10 @@ export default class Content extends Component {
 
    }
 
-   _loadNewsData() {
+   _loadCurrentAccount() {
+        console.log("Entering _loadCurrentAccount")
 
-
-      
-
-        var url1 = 'http://localhost:3001/api/news/tsla';
+        var url1 = 'http://localhost:3001/api/current/logged/';
         fetch(url1, {
             method: 'GET',
             headers: {
@@ -246,125 +248,124 @@ export default class Content extends Component {
             },
         }).then(results => {
             if(results.ok === false) {
-                console.log('reached here');
-                this.setState({errorText: 'Invalid Symbol'});
+                console.log('reached RESULTS IN CURRENT ACCOUNT');
+
                 return;
             } else 
                 return results.json();
         }).then (data => {
             
-            console.log("Reached NEWS data")
-            console.log(data['articles'][0])
-            console.log("Reached NEWS data")
+            console.log(data['answer'][0]['username'])
+            console.log("HELLO LOAD USER ACCOUNT IS HERE")
 
-            var newsData = data;
-
-            var currHeadline = data['articles'][0];
+            var ret = data['answer'][0]['username']
             
-
-            var ret = 
-                <ul>
-                <h4>{data['articles'][0].title}</h4>
-                <h4>{data['articles'][1].title}</h4>
-                <h4>{data['articles'][2].title}</h4>
-                <h4>{data['articles'][3].title}</h4>
-                </ul>
             
             this.setState({ 
-                tslaContent: ret,
+                user: ret,
             });
             
 
 
         }).catch(function() {
-            console.log('error');
+            console.log('error IN CURRENT ACCOUNT');
         });
 
 
-        var url2 = 'http://localhost:3001/api/news/apple';
-        fetch(url2, {
-            method: 'GET',
-            headers: {
-                'Content-Type':'application/json',
-            },
-        }).then(results => {
-            if(results.ok === false) {
-                console.log('reached here');
-                this.setState({errorText: 'Invalid Symbol'});
-                return;
-            } else 
-                return results.json();
-        }).then (data => {
-            
-            console.log("Reached NEWS data")
-            console.log(data['articles'][0])
-            console.log("Reached NEWS data")
+   }
 
-            var newsData = data;
+   _loadNewsData() {
 
-            var currHeadline = data['articles'][0];
-            
 
-            var ret = 
-                <ul>
-                <h4>{data['articles'][0].title}</h4>
-                <h4>{data['articles'][1].title}</h4>
-                <h4>{data['articles'][2].title}</h4>
-                <h4>{data['articles'][3].title}</h4>
-                </ul>
-            
-            this.setState({ 
-                appleContent: ret,
+        // console.log("ENTERING NEWS DATA")
+        // console.log(this.state.user)
+
+        // var url1 = 'http://localhost:3001/api/current/news/receive/' + this.state.user;
+        //     fetch(url1, {
+        //         method: 'GET',
+        //         headers: {
+        //             'Content-Type':'application/json',
+        //         },
+        //     }).then(results => {
+        //         if(results.ok === false) {
+        //             console.log('reached here');
+        //             this.setState({errorText: 'Invalid Symbol'});
+        //             return;
+        //         } else 
+        //             return results.json();
+        //     }).then (data => {
+                
+                
+        //         console.log(data['answer'][0]['newArr'])
+        //         this.setState({ 
+        //             newsTitleArray: data['answer'][0]['newArr'],
+        //         });
+                
+
+
+        //     }).catch(function() {
+        //         console.log('error');
+        //     });
+
+        
+        // var newsTopics = this.state.newsTitleArray;
+
+       var newsTopics = ["tsla", "crypto", "apple"]
+
+        this.setState({ 
+                    newsTitleArray: newsTopics,
+        });
+
+        for (var i = 0; i < newsTopics.length; i++) {
+
+
+        
+
+            var url1 = 'http://localhost:3001/api/news/' + newsTopics[i];
+            fetch(url1, {
+                method: 'GET',
+                headers: {
+                    'Content-Type':'application/json',
+                },
+            }).then(results => {
+                if(results.ok === false) {
+                    console.log('reached here');
+                    this.setState({errorText: 'Invalid Symbol'});
+                    return;
+                } else 
+                    return results.json();
+            }).then (data => {
+                
+                console.log("Reached NEWS data")
+                console.log(data)
+                console.log("Reached NEWS data")
+
+                var newsData = data;
+
+                var currHeadline = data['articles'][0];
+                
+
+                var ret = 
+                    <ul>
+                    <h4>{data['articles'][0].title}</h4>
+                    <h4>{data['articles'][1].title}</h4>
+                    <h4>{data['articles'][2].title}</h4>
+                    <h4>{data['articles'][3].title}</h4>
+                    </ul>
+                
+                this.setState({ 
+                    tslaContent: ret,
+                    newsArray: [...this.state.newsArray, ret]
+                });
+                
+
+
+            }).catch(function() {
+                console.log('error');
             });
-            
 
+        }
 
-        }).catch(function() {
-            console.log('error');
-        });
-
-
-        var url3 = 'http://localhost:3001/api/news/crypto';
-        fetch(url3, {
-            method: 'GET',
-            headers: {
-                'Content-Type':'application/json',
-            },
-        }).then(results => {
-            if(results.ok === false) {
-                console.log('reached here');
-                this.setState({errorText: 'Invalid Symbol'});
-                return;
-            } else 
-                return results.json();
-        }).then (data => {
-            
-            console.log("Reached NEWS data")
-            console.log(data['articles'][0])
-            console.log("Reached NEWS data")
-
-            var newsData = data;
-
-            var currHeadline = data['articles'][0];
-            
-
-            var ret = 
-                <ul>
-                <h4>{data['articles'][0].title}</h4>
-                <h4>{data['articles'][1].title}</h4>
-                <h4>{data['articles'][2].title}</h4>
-                <h4>{data['articles'][3].title}</h4>
-                </ul>
-            
-            this.setState({ 
-                cryptoContent: ret,
-            });
-            
-
-
-        }).catch(function() {
-            console.log('error');
-        });
 
 
         
@@ -382,9 +383,12 @@ export default class Content extends Component {
     componentWillMount() {
         console.log('LifeCycle: Component WILL MOUNT!')
         console.log('-- Component WILL UPDATE!');//
+        this._loadCurrentAccount();
+
         this._loadData(this.state.name);
         this._loadCoinData();
         this._loadNewsData();
+        
     
     }
 
@@ -410,6 +414,8 @@ export default class Content extends Component {
 //
         return (
             <div className='outer'>
+
+                <h1> Welcome {this.state.user}! </h1>
                 
 
                 <h1> News Feed </h1>
@@ -420,21 +426,42 @@ export default class Content extends Component {
 
 
                     <div style = {styles.newsBox}>
-                        <h2> Apple Stock </h2>
-                        {this.state.appleContent}
+                        <h2> {this.state.newsTitleArray[0]} </h2>
+                        {this.state.newsArray[0]}
+
+                        <label style = {{paddingRight: 30}}>
+                          New Topic  :
+                          <input  type="text" name="name" />
+                        </label>
 
                     </div>
                     <div style = {styles.newsBox}>
-                        <h2> Crypto Currencies </h2>
-                        {this.state.cryptoContent}
+                        <h2> {this.state.newsTitleArray[1]} </h2>
+                        {this.state.newsArray[1]}
+                        
+                        <label style = {{paddingRight: 30}}>
+                          New Topic  :
+                          <input  type="text" name="name" />
+                        </label>
                     </div>
                     <div style = {styles.newsBox}>
-                        <h2> Tesla Stock </h2>
-                        {this.state.tslaContent}
+                        <h2> {this.state.newsTitleArray[2]} </h2>
+                        {this.state.newsArray[2]}
+
+                        <label style = {{paddingRight: 30}}>
+                          New Topic  :
+                          <input  type="text" name="name" />
+                        </label>
                         
                     </div>
 
                 </GridList>
+
+
+
+
+
+
 
 
                 <h1> Coin Markets </h1>

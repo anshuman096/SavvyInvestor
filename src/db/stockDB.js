@@ -24,6 +24,16 @@ const AccountSchema = new Schema({
 	password : String
 });
 
+const CurrentAccountSchema = new Schema({
+	username: String,
+	password : String
+});
+
+const accountNewsSchema = new Schema({
+	username: String,
+	newsArr: [String]
+});
+
 
 
 
@@ -31,6 +41,12 @@ const CachingDate = mongoose.model('cachingdate', CachingDateSchema);
 const Interday = mongoose.model('interday', CachingInterdaySchema);
 const Intraday = mongoose.model('intraday', CachingIntradaySchema);
 const Account = mongoose.model('accounts', AccountSchema);
+
+const CurrAcc = mongoose.model('current', CurrentAccountSchema);
+
+const AccNews = mongoose.model('news', accountNewsSchema);
+
+
 
 
 
@@ -50,6 +66,120 @@ function GetFormattedDate() {
     var res =  month + "/" + day + "/" + year;
 	console.log("Date to Update " + res);
 	return res;
+}
+
+
+async function addAccNews(user, arr) {
+	
+	console.log("About to add News")
+	
+
+	var person = new AccNews({username: user, newsArr: arr})
+
+	person.save(function(err){
+		if (err) throw err;
+
+		console.log("saved it")
+	});
+}
+
+
+async function updateAccNews(user, arr) {
+	
+	console.log("About to update News")
+
+	AccNews.findOneAndUpdate({username: user},{newsArr: arr}, function(err){
+		if (err) throw err;
+
+		console.log("up it")
+	});
+
+}
+
+async function checkAccNews(user) {
+	
+	console.log("About to update News")
+
+	return AccNews.find({username: user}, function(err, result){
+		if (err) {
+			console.log("hola")
+		}
+
+		
+		return result;
+	}).then(function (res1) {
+
+		console.log(res1)
+		return res1;
+	});
+
+
+	if (res.length != 0) {
+		console.log("Reaches end")
+		console.log(res.result)
+		return true;
+	}
+
+	return false;
+
+}
+
+async function addCurrentAccount(user, pass) {
+	
+	console.log("About to update Accounts")
+	
+
+	var person = new CurrAcc({username: user, password: pass})
+
+	person.save(function(err){
+		if (err) throw err;
+
+		console.log("saved it")
+	});
+}
+
+async function logoutCurrentAccount(user, pass) {
+	
+	console.log("About to update Accounts")
+	console.log(user)
+	console.log(pass)
+	
+
+
+	CurrAcc.find({username: user, password: pass}).remove().exec(function(err){
+		if (err) throw err;
+
+		console.log("removed it")
+	});
+}
+
+async function checkCurrentAccount() {
+	
+	console.log("About to update Accounts")
+	
+
+
+	return CurrAcc.find( function(err, result){
+		if (err) {
+			console.log("hola")
+		}
+
+		
+		return result;
+	}).then(function (res1) {
+
+		//console.log(res1)
+		return res1;
+	});
+
+
+	if (res.length != 0) {
+		console.log("Reaches end")
+		console.log(res.result)
+		return true;
+	}
+
+	return false;
 }
 
 
@@ -252,5 +382,12 @@ module.exports.updateIntraData = updateIntraData;
 module.exports.addAccount = addAccount;
 module.exports.deleteAccount = deleteAccount;
 module.exports.existingAccount = existingAccount;
+
+module.exports.addCurrentAccount = addCurrentAccount;
+module.exports.logoutCurrentAccount = logoutCurrentAccount;
+module.exports.checkCurrentAccount = checkCurrentAccount;
+module.exports.addAccNews = addAccNews;
+module.exports.updateAccNews = updateAccNews;
+module.exports.checkAccNews = checkAccNews;
 
 

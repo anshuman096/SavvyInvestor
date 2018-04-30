@@ -199,9 +199,145 @@ router.get('/account/delete/:account', function(req, res) {
 
 
 /**
+ * API Call that will login
+ */
+router.get('/current/add/:account', function(req, res) {
+		
+		
+		console.log("Entering mongo")
+		var acc = req.params.account.split('+');
+
+
+		DB.addCurrentAccount(acc[0], acc[1]);
+
+		
+		res.send(JSON.stringify({}))
+
+	}
+);
+
+
+
+
+/**
+ * API Call that will logout
+ */
+router.get('/current/logout/:account', function(req, res) {
+		
+		
+		console.log("Entering mongo")
+		var acc = req.params.account.split('+');
+
+
+		DB.logoutCurrentAccount(acc[0], acc[1]);
+
+		
+		res.send(JSON.stringify({}))
+
+	}
+);
+
+/**
+ * API Call that will check current login session
+ */
+router.get('/current/logged', function( req, res) {
+		
+		console.log("entered here logged")
+
+		DB.checkCurrentAccount().then(function (response) {
+			console.log("here")
+			console.log(response)
+			res.send(JSON.stringify({"answer":response}))
+		});
+
+		//res.send(JSON.stringify({"answer":"response"}))
+
+	}
+);
+
+
+router.get('/current/news/add/:news', function(req, res) {
+		
+		
+		console.log("Entering mongo")
+		var acc = req.params.news.split('+');
+
+		console.log("%s, %s, %s ", acc[0], acc[1], acc[2])
+
+		DB.addAccNews(acc[0], acc)
+
+
+		//DB.addCurrentAccount(acc[0], acc[1],);
+
+		
+		res.send(JSON.stringify({}))
+
+	}
+);
+
+router.get('/current/news/update/:news', function(req, res) {
+		
+		
+		console.log("Entering mongo")
+		var acc = req.params.news.split('+');
+
+		console.log("%s, %s, %s ", acc[0], acc[1], acc[2])
+
+		DB.updateAccNews(acc[0], acc)
+
+
+		//DB.addCurrentAccount(acc[0], acc[1],);
+
+		
+		res.send(JSON.stringify({}))
+
+	}
+);
+
+router.get('/current/news/receive/:user', function(req, res) {
+		
+		
+		console.log("Entering mongo")
+
+
+		DB.checkAccNews(req.params.user).then(function (response) {
+			console.log(response)
+			res.send(JSON.stringify({"answer":response}))
+		});
+
+
+		//DB.addCurrentAccount(acc[0], acc[1],);
+
+		
+
+	}
+);
+
+/**
  * API Call that will validate a user account
  */
 router.get('/account/check/:account', function(req, res) {
+		
+		
+		console.log("Entering mongo")
+		var acc = req.params.account.split('+');
+
+
+		//DB.existingAccount(acc[0], acc[1]);
+
+
+		DB.existingAccount(acc[0], acc[1]).then(function (response) {
+			console.log(response)
+			res.send(JSON.stringify({"answer":response}))
+		});
+		
+
+		
+
+	}
+);
+
+router.get('/session/account', function(req, res) {
 		
 		
 		console.log("Entering mongo")
