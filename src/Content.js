@@ -14,6 +14,9 @@ import {GridList, GridTile} from 'material-ui/GridList';
 
 // Receieved help from:
 // http://www.material-ui.com/#/components/grid-list
+// 
+
+//import {LineChart} from 'react-chartjs';
 
 
 var LineChart = require("react-chartjs").Line;
@@ -33,7 +36,7 @@ export default class Content extends Component {
             tableContent: null,
             chartData: null,
             isLoading: true,
-            name : 'MSFT',
+            name : 'tsla',
             activeTab: 'table',
             errorText: '',
         }
@@ -63,7 +66,9 @@ export default class Content extends Component {
             } else 
                 return results.json();
         }).then (data => {
-            var chartData = {};
+            console.log("Showing off data")
+            console.log(name)
+            var chartData = {}; 
             chartData["labels"] = data["labels"];
             chartData["datasets"] = data["datasets"];
             var tableView = data["tableView"];
