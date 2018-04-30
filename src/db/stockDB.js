@@ -71,7 +71,7 @@ async function addAccount(user, pass) {
 		console.log("saved it")
 	});
 }
-m
+
 /**
  * Deletes account
  * @param  {[type]} user [description]
